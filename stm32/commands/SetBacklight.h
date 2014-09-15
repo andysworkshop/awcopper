@@ -10,16 +10,36 @@
 namespace cmd {
 
   /*
-   * Set the backlight
+   * Set the backlight.
+   * Parameters:
+   *   0 : the backlight percentage, 0..100
    */
 
-  struct SetBacklight : CommandBase {
+  struct SetBacklight {
 
     enum {
       PARAMETER_COUNT = 1
     };
 
-    virtual ~SetBacklight() {}
-    virtual void execute(const uint8_t *parameters) override;
+    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
   };
+
+
+  /*
+   * Execute the command
+   */
+
+  inline void SetBacklight::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+
+    uint8_t percentage;
+
+    // wait for, and then read the parameter
+
+    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
+    percentage=commandBuffer.read();
+
+    // set the percentage
+
+    panel.getBacklight().setPercentage(percentage);
+  }
 }

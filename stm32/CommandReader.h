@@ -26,7 +26,7 @@ class CommandReader {
 
     typedef I2C2_Remap1<I2C2InterruptFeature> MyI2C;
 
-    CircularBufferInputOutputStream& _commandBuffer;
+    circular_buffer<uint8_t>& _commandBuffer;
     StatusIndicators _indicators;
     scoped_ptr<MyI2C> _i2c;
 
@@ -34,6 +34,6 @@ class CommandReader {
     void onInterrupt(I2CEventType eventType);
 
   public:
-    CommandReader(CircularBufferInputOutputStream& commandBuffer,StatusIndicators& indicators);
+    CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators);
     void start();
 };

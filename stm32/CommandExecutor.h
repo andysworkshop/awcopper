@@ -15,11 +15,14 @@
 class CommandExecutor {
 
   protected:
-    CircularBufferInputOutputStream& _commandBuffer;
+    circular_buffer<uint8_t>& _commandBuffer;
     Panel& _panel;
     StatusIndicators _indicators;
 
+  protected:
+    void processNextCommand();
+
   public:
-    CommandExecutor(CircularBufferInputOutputStream& commandBuffer,Panel& panel,StatusIndicators& indicators);
+    CommandExecutor(circular_buffer<uint8_t>& commandBuffer,Panel& panel,StatusIndicators& indicators);
     void run();
 };

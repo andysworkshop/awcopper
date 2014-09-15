@@ -11,7 +11,7 @@
  * Constructor
  */
 
-CommandReader::CommandReader(CircularBufferInputOutputStream& commandBuffer,StatusIndicators& indicators)
+CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators)
   : _commandBuffer(commandBuffer),
     _indicators(indicators) {
 
@@ -54,7 +54,7 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
     case I2CEventType::EVENT_RECEIVE:                   // data received
       _commandBuffer.write(I2C_ReceiveData(*_i2c));     // add to the circular buffer
-      _indicators.setFull(_commandBuffer.isFull());     // set/reset the full LED
+      _indicators.setFull(_commandBuffer.availableToWrite()==0);     // set/reset the full LED
       break;
 
     default:

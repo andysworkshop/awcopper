@@ -19,6 +19,9 @@ using namespace stm32plus::display;
 
 #include "commands/CommandId.h"
 #include "commands/SetBacklight.h"
+#include "commands/SetWindow.h"
+#include "commands/Colour.h"
+#include "commands/DrawRectangle.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

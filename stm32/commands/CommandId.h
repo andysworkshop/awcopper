@@ -14,6 +14,58 @@ namespace cmd {
    */
 
   enum class CommandId {
-    ID_SET_BACKLIGHT = 0
+
+    /*
+     * Non-graphical commands
+     */
+
+    SET_BACKLIGHT,
+    SET_WINDOW,
+
+    /*
+     * Graphical commands
+     */
+
+    FOREGROUND_COLOUR,
+    BACKGROUND_COLOUR,
+    RECTANGLE,
+    FILL_RECTANGLE,
+    CLEAR_RECTANGLE,
+    LINE,
+    PLOT,
+    ELLIPSE,
+    FILL_ELLIPSE,
+    BEGIN_WRITING,
+    WRITE_DATA,
+
+    /*
+     * Text commands
+     */
+
+    FONT,
+    WRITE_TEXT,
+    WRITE_FILLED_TEXT,
+
+    /*
+     * Flash commands
+     */
+
+    ERASE_FLASH_DEVICE,
+    ERASE_FLASH_PAGES,
+    PROGRAM_FLASH,
+
+    /*
+     * Raw bitmap commands
+     */
+
+    WRITE_BITMAP,
+    WRITE_FLASH_BITMAP,
+
+    /*
+     * JPEG bitmap commands
+     */
+
+    WRITE_JPEG,
+    WRITE_FLASH_JPEG
   };
 }

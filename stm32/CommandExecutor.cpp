@@ -61,8 +61,24 @@ void CommandExecutor::processNextCommand() {
 
   switch(id) {
 
-    case CommandId::ID_SET_BACKLIGHT:
+    case cmd::CommandId::SET_BACKLIGHT:
       cmd::SetBacklight::execute(_panel,_commandBuffer);
+      break;
+
+    case cmd::CommandId::SET_WINDOW:
+      cmd::SetWindow::execute(_panel,_commandBuffer);
+      break;
+
+    case cmd::CommandId::FOREGROUND_COLOUR:
+      cmd::Colour::execute(_panel,_commandBuffer,true);
+      break;
+
+    case cmd::CommandId::BACKGROUND_COLOUR:
+      cmd::Colour::execute(_panel,_commandBuffer,false);
+      break;
+
+    case cmd::CommandId::RECTANGLE:
+      cmd::DrawRectangle::execute(_panel,_commandBuffer);
       break;
 
     default:

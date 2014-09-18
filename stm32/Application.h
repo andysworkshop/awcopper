@@ -26,6 +26,7 @@ using namespace stm32plus::display;
 #include "commands/Polyline.h"
 #include "commands/Line.h"
 #include "commands/Plot.h"
+#include "commands/BeginWriting.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

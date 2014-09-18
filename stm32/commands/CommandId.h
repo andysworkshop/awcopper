@@ -21,6 +21,9 @@ namespace cmd {
 
     SET_BACKLIGHT,
     SET_WINDOW,
+    SLEEP,
+    WAKE,
+    GAMMA,
 
     /*
      * Graphical commands

@@ -111,6 +111,10 @@ void CommandExecutor::processNextCommand() {
       EllipseOps::execute(_panel,_commandBuffer,EllipseOps::FILLED);
       break;
 
+    case CommandId::BEGIN_WRITING:
+      BeginWriting::execute(_panel);
+      break;
+
     default:
       // invalid command. not good.
       break;

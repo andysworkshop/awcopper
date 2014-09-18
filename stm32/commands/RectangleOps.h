@@ -19,13 +19,17 @@ namespace cmd {
    *   6,7 : height
    */
 
-  struct DrawRectangle {
+  struct RectangleOps {
 
     enum {
-      PARAMETER_COUNT = 8
+      PARAMETER_COUNT = 8,
+
+      FILLED,
+      CLEARED,
+      OUTLINED
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType);
   };
 
 
@@ -33,7 +37,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void DrawRectangle::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void RectangleOps::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t parameters[4];
@@ -45,6 +49,21 @@ namespace cmd {
 
     // draw the rectangle
 
-    gl.drawRectangle(Rectangle(parameters[0],parameters[1],parameters[2],parameters[3]));
+    Rectangle rc(parameters[0],parameters[1],parameters[2],parameters[3]);
+
+    switch(operType) {
+
+      case CLEARED:
+        gl.clearRectangle(rc);
+        break;
+
+      case FILLED:
+        gl.fillRectangle(rc);
+        break;
+
+      default:
+        gl.drawRectangle(rc);
+        break;
+    }
   }
 }

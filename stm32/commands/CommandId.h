@@ -32,6 +32,7 @@ namespace cmd {
     FILL_RECTANGLE,
     CLEAR_RECTANGLE,
     LINE,
+    POLYLINE,
     PLOT,
     ELLIPSE,
     FILL_ELLIPSE,

@@ -21,7 +21,10 @@ using namespace stm32plus::display;
 #include "commands/SetBacklight.h"
 #include "commands/SetWindow.h"
 #include "commands/Colour.h"
-#include "commands/DrawRectangle.h"
+#include "commands/RectangleOps.h"
+#include "commands/Polyline.h"
+#include "commands/Line.h"
+#include "commands/Plot.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

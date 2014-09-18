@@ -51,34 +51,56 @@ void CommandExecutor::run() {
 
 void CommandExecutor::processNextCommand() {
 
-  cmd::CommandId id;
+  using namespace cmd;
+
+  CommandId id;
 
   // read the command from the buffer
 
-  id=static_cast<cmd::CommandId>(_commandBuffer.read());
+  id=static_cast<CommandId>(_commandBuffer.read());
 
   // execute the command
 
   switch(id) {
 
-    case cmd::CommandId::SET_BACKLIGHT:
-      cmd::SetBacklight::execute(_panel,_commandBuffer);
+    case CommandId::SET_BACKLIGHT:
+      SetBacklight::execute(_panel,_commandBuffer);
       break;
 
-    case cmd::CommandId::SET_WINDOW:
-      cmd::SetWindow::execute(_panel,_commandBuffer);
+    case CommandId::SET_WINDOW:
+      SetWindow::execute(_panel,_commandBuffer);
       break;
 
-    case cmd::CommandId::FOREGROUND_COLOUR:
-      cmd::Colour::execute(_panel,_commandBuffer,true);
+    case CommandId::FOREGROUND_COLOUR:
+      Colour::execute(_panel,_commandBuffer,true);
       break;
 
-    case cmd::CommandId::BACKGROUND_COLOUR:
-      cmd::Colour::execute(_panel,_commandBuffer,false);
+    case CommandId::BACKGROUND_COLOUR:
+      Colour::execute(_panel,_commandBuffer,false);
       break;
 
-    case cmd::CommandId::RECTANGLE:
-      cmd::DrawRectangle::execute(_panel,_commandBuffer);
+    case CommandId::RECTANGLE:
+      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::OUTLINED);
+      break;
+
+    case CommandId::FILL_RECTANGLE:
+      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::FILLED);
+      break;
+
+    case CommandId::CLEAR_RECTANGLE:
+      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::CLEARED);
+      break;
+
+    case CommandId::POLYLINE:
+      Polyline::execute(_panel,_commandBuffer);
+      break;
+
+    case CommandId::LINE:
+      Line::execute(_panel,_commandBuffer);
+      break;
+
+    case CommandId::PLOT:
+      Plot::execute(_panel,_commandBuffer);
       break;
 
     default:

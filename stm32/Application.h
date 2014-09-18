@@ -22,6 +22,7 @@ using namespace stm32plus::display;
 #include "commands/SetWindow.h"
 #include "commands/Colour.h"
 #include "commands/RectangleOps.h"
+#include "commands/EllipseOps.h"
 #include "commands/Polyline.h"
 #include "commands/Line.h"
 #include "commands/Plot.h"

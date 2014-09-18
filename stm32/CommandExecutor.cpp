@@ -103,6 +103,14 @@ void CommandExecutor::processNextCommand() {
       Plot::execute(_panel,_commandBuffer);
       break;
 
+    case CommandId::ELLIPSE:
+      EllipseOps::execute(_panel,_commandBuffer,EllipseOps::OUTLINED);
+      break;
+
+    case CommandId::FILL_ELLIPSE:
+      EllipseOps::execute(_panel,_commandBuffer,EllipseOps::FILLED);
+      break;
+
     default:
       // invalid command. not good.
       break;

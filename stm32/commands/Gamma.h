@@ -10,17 +10,16 @@
 namespace cmd {
 
   /*
-   * Plot a single point
+   * Set a gamma curve
    *
    * Parameters:
-   *   0,1 : X1
-   *   2,3 : Y1
+   *   0..12 : 13 byte gamma curve values (see R61523Gamma)
    */
 
-  struct Plot {
+  struct Gamma {
 
     enum {
-      PARAMETER_COUNT = 4
+      PARAMETER_COUNT = 13
     };
 
     static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
@@ -31,15 +30,16 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Plot::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Gamma::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
-    int16_t params[2];
+    uint8_t params[13];
 
-    // read the co-ordinates and plot the point
+    // read the parameters and set the gamma
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.read(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
-    gl.plotPoint(Point(params[0],params[1]));
+
+    gl.applyGamma(R61523Gamma(params));
   }
 }

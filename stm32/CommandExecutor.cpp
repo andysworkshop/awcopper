@@ -115,6 +115,14 @@ void CommandExecutor::processNextCommand() {
       BeginWriting::execute(_panel);
       break;
 
+    case CommandId::WRITE_DATA:
+      WriteData::execute(_panel,_commandBuffer);
+      break;
+
+    case CommandId::GAMMA:
+      Gamma::execute(_panel,_commandBuffer);
+      break;
+
     default:
       // invalid command. not good.
       break;

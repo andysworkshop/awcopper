@@ -10,17 +10,16 @@
 namespace cmd {
 
   /*
-   * Plot a single point
+   * Set the currently selected font for text operations
    *
    * Parameters:
-   *   0,1 : X1
-   *   2,3 : Y1
+   *   0 : the font index
    */
 
-  struct Plot {
+  struct SetFont {
 
     enum {
-      PARAMETER_COUNT = 4
+      PARAMETER_COUNT = 1
     };
 
     static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
@@ -31,15 +30,18 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Plot::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void SetFont::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
 
+    uint8_t font;
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
-    int16_t params[2];
 
-    // read the co-ordinates and plot the point
+    // read the font index
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
-    gl.plotPoint(Point(params[0],params[1]));
+    font=commandBuffer.read();
+
+    // set the selected font
+
+    gl << panel.getFontManager().getFont(font);
   }
 }

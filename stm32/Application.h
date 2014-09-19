@@ -15,6 +15,7 @@
 using namespace stm32plus;
 using namespace stm32plus::display;
 
+#include "FontManager.h"
 #include "Panel.h"
 
 #include "commands/CommandId.h"
@@ -27,6 +28,10 @@ using namespace stm32plus::display;
 #include "commands/Line.h"
 #include "commands/Plot.h"
 #include "commands/BeginWriting.h"
+#include "commands/WriteData.h"
+#include "commands/Sleep.h"
+#include "commands/Wake.h"
+#include "commands/Gamma.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

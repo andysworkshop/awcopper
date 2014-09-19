@@ -41,6 +41,7 @@ class Panel {
     LcdAccessMode *_accessMode;
     LcdPanel *_gl;
     LcdBacklight *_backlight;
+    FontManager _fontManager;
 
   public:
     Panel();
@@ -48,10 +49,20 @@ class Panel {
     LcdPanel& getGraphicsLibrary();
     LcdAccessMode& getAccessMode();
     LcdBacklight& getBacklight();
+    const FontManager& getFontManager() const;
 
     void clearScreen() const;
     void setBacklight(uint8_t newPercent);
 };
+
+
+/*
+ * Get the font manager
+ */
+
+inline const FontManager& Panel::getFontManager() const {
+  return _fontManager;
+}
 
 
 /*

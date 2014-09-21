@@ -25,6 +25,12 @@ Panel::Panel() {
   R61523Gamma gamma(levels);
   _gl->applyGamma(gamma);
 
+  // set the 16 to 24 bit colour expansion mode to copy the MSB to the LSBs
+
+  _accessMode->writeCommand(r61523::SET_FRAME_AND_INTERFACE);
+  _accessMode->writeData(0x80);
+  _accessMode->writeData(0x80);     // EPF = 10 (msb => lsb)
+
   // create the default backlight and leave it switched off for now
 
   _backlight=new LcdBacklight(*_accessMode);

@@ -19,57 +19,57 @@ namespace cmd {
      * Non-graphical commands
      */
 
-    SET_BACKLIGHT,
-    SET_WINDOW,
-    SLEEP,
-    WAKE,
-    GAMMA,
+    SET_BACKLIGHT = 0,
+    SET_WINDOW = 1,
+    SLEEP = 2,
+    WAKE = 3,
+    GAMMA = 4,
 
     /*
      * Graphical commands
      */
 
-    FOREGROUND_COLOUR,
-    BACKGROUND_COLOUR,
-    RECTANGLE,
-    FILL_RECTANGLE,
-    CLEAR_RECTANGLE,
-    LINE,
-    POLYLINE,
-    PLOT,
-    ELLIPSE,
-    FILL_ELLIPSE,
-    BEGIN_WRITING,
-    WRITE_DATA,
+    FOREGROUND_COLOUR = 5,
+    BACKGROUND_COLOUR = 6,
+    RECTANGLE = 7,
+    FILL_RECTANGLE = 8,
+    CLEAR_RECTANGLE = 9,
+    LINE = 10,
+    POLYLINE = 11,
+    PLOT = 12,
+    ELLIPSE = 13,
+    FILL_ELLIPSE = 14,
+    BEGIN_WRITING = 15,
+    WRITE_DATA = 16,
 
     /*
      * Text commands
      */
 
-    FONT,
-    WRITE_TEXT,
-    WRITE_FILLED_TEXT,
+    FONT = 17,
+    WRITE_TEXT = 18,
+    WRITE_FILLED_TEXT = 19,
 
     /*
      * Flash commands
      */
 
-    ERASE_FLASH_DEVICE,
-    ERASE_FLASH_PAGES,
-    PROGRAM_FLASH,
+    ERASE_FLASH_DEVICE = 20,
+    ERASE_FLASH_PAGES = 21,
+    PROGRAM_FLASH = 22,
 
     /*
      * Raw bitmap commands
      */
 
-    WRITE_BITMAP,
-    WRITE_FLASH_BITMAP,
+    WRITE_BITMAP = 23,
+    WRITE_FLASH_BITMAP = 24,
 
     /*
      * JPEG bitmap commands
      */
 
-    WRITE_JPEG,
-    WRITE_FLASH_JPEG
+    WRITE_JPEG = 25,
+    WRITE_FLASH_JPEG = 26
   };
 }

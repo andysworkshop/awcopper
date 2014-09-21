@@ -19,8 +19,9 @@ CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndic
 
   // initialise the peripheral
 
-  params.i2c_timing=0x00731012;
-  params.i2c_ownAddress=I2C_ADDRESS;
+  params.i2c_timing=0xB0420F13;
+  params.i2c_ownAddress=I2C_ADDRESS << 1;
+  params.i2c_analogFilter=false;
 
   _i2c.reset(new MyI2C(params));
 
@@ -39,7 +40,7 @@ void CommandReader::start() {
   // enable the interrupts and the peripheral
 
   _i2c->clearPendingInterruptsFlag(I2C_IT_RXI);
-  _i2c->enableInterrupts(I2C_IT_RXI);
+  _i2c->enableInterrupts(I2C_IT_RXI | I2C_IT_TXI | I2C_IT_ERRI | I2C_IT_TCI | I2C_IT_STOPI | I2C_IT_NACKI | I2C_IT_ADDRI);
   _i2c->enablePeripheral();
 }
 

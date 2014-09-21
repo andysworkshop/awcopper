@@ -17,7 +17,7 @@ class CommandReader {
   protected:
 
     enum {
-      I2C_ADDRESS = 0x43        // peripheral slave address
+      I2C_ADDRESS = 0x38        // peripheral slave address
     };
 
     /*

@@ -10,7 +10,7 @@
 namespace cmd {
 
   /*
-   * Draw a single pixel outline of a rectangle in the foreground colour
+   * Rectangle operations (outlined, filled, cleared)
    *
    * Parameters:
    *   0,1 : top-left X

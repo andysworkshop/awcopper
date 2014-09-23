@@ -72,6 +72,7 @@
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs.1116088680" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.defs" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="STM32PLUS_F0_51"/>
+									<listOptionValue builtIn="false" value="DEBUG"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths.1704349591" name="Include paths (-I)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.cpp.compiler.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/stm32plus}&quot;"/>

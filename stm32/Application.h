@@ -40,6 +40,7 @@ using namespace stm32plus::display;
 #include "commands/FlashEraseSector.h"
 #include "commands/FlashProgram.h"
 #include "commands/JpegWriter.h"
+#include "commands/LzgWriter.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

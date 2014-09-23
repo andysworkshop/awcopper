@@ -139,6 +139,10 @@ void CommandExecutor::processNextCommand() {
       JpegWriter::execute(_panel,_commandBuffer);
       break;
 
+    case CommandId::WRITE_LZG_BITMAP:
+      LzgWriter::execute(_panel,_commandBuffer);
+      break;
+
     default:
       // invalid command. not good.
       break;

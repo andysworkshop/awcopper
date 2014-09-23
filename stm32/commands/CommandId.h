@@ -66,10 +66,25 @@ namespace cmd {
     WRITE_FLASH_BITMAP = 24,
 
     /*
+     * Raw LZG compressed bitmap commands
+     */
+
+    WRITE_LZG_BITMAP = 25,
+    WRITE_FLASH_LZG_BITMAP = 26,
+
+    /*
      * JPEG bitmap commands
      */
 
-    WRITE_JPEG = 25,
-    WRITE_FLASH_JPEG = 26
+    WRITE_JPEG = 27,
+    WRITE_FLASH_JPEG = 28,
+
+    /*
+     * T1/T2 commands
+     */
+
+    TIMER_SET_FREQUENCY = 29,
+    TIMER_SET_DUTY_CYCLE = 30,
+    TIMER_ON_OFF = 31
   };
 }

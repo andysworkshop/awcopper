@@ -69,12 +69,22 @@ bool CommandReaderInputStream::available() {
 
 
 /*
+ * Skip forwards (LZG dcompressor uses this)
+ */
+
+bool CommandReaderInputStream::skip(uint32_t howMuch) {
+
+  while(howMuch--)
+    read();
+
+  return true;
+}
+
+
+/*
  * These methods will never get called
  */
 
-bool CommandReaderInputStream::skip(uint32_t /* howMuch */) {
-  return false;
-}
 bool CommandReaderInputStream::reset() {
   return false;
 }

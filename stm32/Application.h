@@ -16,6 +16,7 @@
 using namespace stm32plus;
 using namespace stm32plus::display;
 
+#include "CommandReaderInputStream.h"
 #include "FontManager.h"
 #include "Panel.h"
 #include "Flash.h"
@@ -38,6 +39,7 @@ using namespace stm32plus::display;
 #include "commands/FlashEraseDevice.h"
 #include "commands/FlashEraseSector.h"
 #include "commands/FlashProgram.h"
+#include "commands/JpegWriter.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

@@ -135,6 +135,10 @@ void CommandExecutor::processNextCommand() {
       FlashProgram::execute(_commandBuffer);
       break;
 
+    case CommandId::WRITE_JPEG:
+      JpegWriter::execute(_panel,_commandBuffer);
+      break;
+
     default:
       // invalid command. not good.
       break;

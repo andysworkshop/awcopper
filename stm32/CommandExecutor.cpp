@@ -123,6 +123,18 @@ void CommandExecutor::processNextCommand() {
       Gamma::execute(_panel,_commandBuffer);
       break;
 
+    case CommandId::ERASE_FLASH_DEVICE:
+      FlashEraseDevice::execute();
+      break;
+
+    case CommandId::ERASE_FLASH_SECTOR:
+      FlashEraseSector::execute(_commandBuffer);
+      break;
+
+    case CommandId::PROGRAM_FLASH:
+      FlashProgram::execute(_commandBuffer);
+      break;
+
     default:
       // invalid command. not good.
       break;

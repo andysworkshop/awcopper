@@ -55,7 +55,7 @@ namespace cmd {
      */
 
     ERASE_FLASH_DEVICE = 20,
-    ERASE_FLASH_PAGES = 21,
+    ERASE_FLASH_SECTOR = 21,
     PROGRAM_FLASH = 22,
 
     /*

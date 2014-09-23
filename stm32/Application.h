@@ -8,6 +8,7 @@
 
 #include "config/stm32plus.h"
 #include "config/i2c.h"
+#include "config/spi.h"
 #include "config/smartptr.h"
 #include "memory/circular_buffer.h"
 #include "config/display/tft.h"
@@ -17,6 +18,8 @@ using namespace stm32plus::display;
 
 #include "FontManager.h"
 #include "Panel.h"
+#include "Flash.h"
+#include "FlashGraphics.h"
 
 #include "commands/CommandId.h"
 #include "commands/SetBacklight.h"
@@ -32,6 +35,9 @@ using namespace stm32plus::display;
 #include "commands/Sleep.h"
 #include "commands/Wake.h"
 #include "commands/Gamma.h"
+#include "commands/FlashEraseDevice.h"
+#include "commands/FlashEraseSector.h"
+#include "commands/FlashProgram.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

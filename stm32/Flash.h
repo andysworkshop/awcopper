@@ -7,50 +7,72 @@
 #pragma once
 
 
-namespace awreflow {
+/*
+ * Base flash class looks after the SPI and DMA communications
+ */
 
-  /*
-   * Base flash class looks after the SPI and DMA communications
-   */
+class Flash {
 
-  class Flash {
+  public:
 
-    protected:
+    /*
+     * Sector sizes used in the erase command
+     */
 
-      /*
-       * Declare the SPI peripheral that we'll use both directly and indirectly via DMA.
-       */
+    enum SectorSize {
+      SECTOR_4K,
+      SECTOR_8K,
+      SECTOR_64K
+    };
 
-      typedef Spi1<SpiFifoNotifyQuarterFullFeature> MySpi;
-      scoped_ptr<MySpi> _spi;
+    /*
+     * Commands used here
+     */
 
-      /*
-       * Inner class to manage the NSS pin using the
-       * Resource Acquisition Is Initialisation technique
-       */
+    enum {
+      PAGE_PROGRAM              = 0x02,
+      READ_DATA                 = 0x03,
+      PARAMETER_SECTOR_ERASE_4K = 0x20,
+      PARAMETER_SECTOR_ERASE_8K = 0x40,
+      BULK_ERASE                = 0x60,
+      SECTOR_ERASE              = 0xd8
+    };
 
-      struct SpiNssManager {
-        const MySpi& _spi;
+  protected:
 
-        SpiNssManager(const MySpi& spi)
-          : _spi(spi) {
-          _spi.setNss(false);
-        }
-        ~SpiNssManager() {
-          _spi.setNss(true);
-        }
-      };
+    /*
+     * Declare the SPI peripheral that we'll use both directly and indirectly via DMA.
+     */
 
-    protected:
-      bool waitForIdle() const;
-      bool writeEnable() const;
-      bool readStatusRegister(uint8_t& sr) const;
+    typedef Spi1<SpiFifoNotifyQuarterFullFeature> MySpi;
+    scoped_ptr<MySpi> _spi;
 
-    public:
-      Flash();
+    /*
+     * Inner class to manage the NSS pin using the
+     * Resource Acquisition Is Initialisation technique
+     */
 
-      bool eraseLastSector() const;
-      bool writeLastPage(const uint8_t *page) const;
-      bool readLastPage(uint8_t *page) const;
-  };
-}
+    struct SpiNssManager {
+      const MySpi& _spi;
+
+      SpiNssManager(const MySpi& spi)
+        : _spi(spi) {
+        _spi.setNss(false);
+      }
+      ~SpiNssManager() {
+        _spi.setNss(true);
+      }
+    };
+
+  protected:
+    bool waitForIdle() const;
+    bool writeEnable() const;
+    bool readStatusRegister(uint8_t& sr) const;
+
+  public:
+    Flash();
+
+    bool bulkErase() const;
+    bool eraseSector(uint32_t sectorAddress,SectorSize sectorSize) const;
+    bool writePage(uint32_t pageAddress,const uint8_t *page) const;
+};

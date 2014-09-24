@@ -119,6 +119,18 @@ void CommandExecutor::processNextCommand() {
       WriteData::execute(_panel,_commandBuffer);
       break;
 
+    case CommandId::FONT:
+      SetFont::execute(_panel,_commandBuffer);
+      break;
+
+    case CommandId::WRITE_TEXT:
+      TextOps::execute(_panel,_commandBuffer,TextOps::OUTLINED);
+      break;
+
+    case CommandId::WRITE_FILLED_TEXT:
+      TextOps::execute(_panel,_commandBuffer,TextOps::FILLED);
+      break;
+
     case CommandId::GAMMA:
       Gamma::execute(_panel,_commandBuffer);
       break;

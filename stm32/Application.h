@@ -41,6 +41,8 @@ using namespace stm32plus::display;
 #include "commands/FlashProgram.h"
 #include "commands/JpegWriter.h"
 #include "commands/LzgWriter.h"
+#include "commands/SetFont.h"
+#include "commands/TextOps.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

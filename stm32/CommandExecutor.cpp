@@ -151,8 +151,16 @@ void CommandExecutor::processNextCommand() {
       JpegWriter::execute(_panel,_commandBuffer);
       break;
 
+    case CommandId::WRITE_BITMAP:
+      BitmapWriter::execute(_panel,_commandBuffer,BitmapWriter::UNCOMPRESSED);
+      break;
+
     case CommandId::WRITE_LZG_BITMAP:
-      LzgWriter::execute(_panel,_commandBuffer);
+      BitmapWriter::execute(_panel,_commandBuffer,BitmapWriter::COMPRESSED);
+      break;
+
+    case CommandId::WRITE_FLASH_BITMAP:
+      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::UNCOMPRESSED);
       break;
 
     default:

@@ -64,11 +64,6 @@ namespace cmd {
 
     WRITE_BITMAP = 23,
     WRITE_FLASH_BITMAP = 24,
-
-    /*
-     * Raw LZG compressed bitmap commands
-     */
-
     WRITE_LZG_BITMAP = 25,
     WRITE_FLASH_LZG_BITMAP = 26,
 

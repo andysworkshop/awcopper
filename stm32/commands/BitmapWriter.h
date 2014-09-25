@@ -10,19 +10,26 @@
 namespace cmd {
 
   /*
-   * Draw an LZG compressed image direct from the Arduino to the display.
+   * Draw an image direct from the Arduino to the display. The image may be uncompressed
+   * or LZG compressed.
    *
    * Parameters:
    *   0,1    : X
    *   2,3    : Y
    *   4,5    : Width
    *   6,7    : Height
-   *   8,9,10 : compressed data size
-   *   11-n   : compressed data stream
+   *   8,9,10 : data size
+   *   11-n   : data stream
    */
 
-  struct LzgWriter {
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+  struct BitmapWriter {
+
+    enum {
+      COMPRESSED,
+      UNCOMPRESSED
+    };
+
+    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int type);
   };
 
 
@@ -30,7 +37,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void LzgWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void BitmapWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int type) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t params[4];
@@ -49,13 +56,17 @@ namespace cmd {
     commandBuffer.read(reinterpret_cast<uint8_t *>(&dataSize),3);
 
     // declare a command reader input stream to manage reading the data direct
-    // from the Arduino to the LZG decoder
+    // from the Arduino to the bitmap writer
 
     CommandReaderInputStream inputStream(commandBuffer,dataSize);
-    LzgDecompressionStream decompressor(inputStream,dataSize);
 
     // draw the graphic
 
-    gl.drawBitmap(rc,decompressor);
+    if(type==COMPRESSED) {
+      LzgDecompressionStream decompressor(inputStream,dataSize);
+      gl.drawBitmap(rc,decompressor);
+    }
+    else
+      gl.drawBitmap(rc,inputStream);
   }
 }

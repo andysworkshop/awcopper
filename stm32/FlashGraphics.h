@@ -40,7 +40,7 @@ class FlashGraphics : public Flash {
   public:
     FlashGraphics(Panel& panel);
 
-    void drawBitmap(const Rectangle& rc,uint32_t offset,uint32_t length);
+    void drawUncompressedBitmap(const Rectangle& rc,uint32_t offset,uint32_t length);
 
     Panel::LcdPanel& getGraphicsLibrary();
 };

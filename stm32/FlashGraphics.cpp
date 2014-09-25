@@ -36,7 +36,7 @@ FlashGraphics::FlashGraphics(Panel& panel) :
  * that you just have to learn.
  */
 
-void FlashGraphics::drawBitmap(const Rectangle& rc,uint32_t offset,uint32_t length) {
+void FlashGraphics::drawUncompressedBitmap(const Rectangle& rc,uint32_t offset,uint32_t length) {
 
   uint8_t zero,bytes[4];
   Panel::LcdPanel& gl(_panel.getGraphicsLibrary());

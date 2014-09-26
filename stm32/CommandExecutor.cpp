@@ -171,6 +171,10 @@ void CommandExecutor::processNextCommand() {
       FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::JPEG);
       break;
 
+    case CommandId::TPIN_SET_MODE:
+      TpinMode::execute(_commandBuffer);
+      break;
+
     default:
       // invalid command. not good.
       break;

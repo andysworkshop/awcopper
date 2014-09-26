@@ -78,8 +78,11 @@ namespace cmd {
      * T1/T2 commands
      */
 
-    TIMER_SET_FREQUENCY = 29,
-    TIMER_SET_DUTY_CYCLE = 30,
-    TIMER_ON_OFF = 31
+    TPIN_SET_MODE = 29,
+    TPIN_TIMER_SET_FREQUENCY = 29,
+    TPIN_TIMER_SET_DUTY_CYCLE = 30,
+    TPIN_TIMER_ON_OFF = 31,
+    TPIN_GPIO_SET,
+    TPIN_GPIO_RESET
   };
 }

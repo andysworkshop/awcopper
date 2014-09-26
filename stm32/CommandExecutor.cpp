@@ -160,7 +160,15 @@ void CommandExecutor::processNextCommand() {
       break;
 
     case CommandId::WRITE_FLASH_BITMAP:
-      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::UNCOMPRESSED);
+      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::UNCOMPRESSED);
+      break;
+
+    case CommandId::WRITE_FLASH_LZG_BITMAP:
+      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::COMPRESSED);
+      break;
+
+    case CommandId::WRITE_FLASH_JPEG:
+      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::JPEG);
       break;
 
     default:

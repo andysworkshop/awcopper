@@ -21,7 +21,6 @@ using namespace stm32plus::display;
 #include "Panel.h"
 #include "Flash.h"
 #include "FlashInputStream.h"
-#include "FlashGraphics.h"
 
 #include "commands/CommandId.h"
 #include "commands/SetBacklight.h"

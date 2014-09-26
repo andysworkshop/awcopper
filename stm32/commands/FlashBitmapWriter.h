@@ -10,7 +10,7 @@
 namespace cmd {
 
   /*
-   * Draw an image direct from the Arduino to the display. The image may be uncompressed
+   * Draw an image sourced from flash to the display. The image may be uncompressed
    * or LZG compressed.
    *
    * Parameters:
@@ -24,12 +24,13 @@ namespace cmd {
 
   struct FlashBitmapWriter {
 
-    enum {
+    enum class Storage {
       COMPRESSED,
-      UNCOMPRESSED
+      UNCOMPRESSED,
+      JPEG
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int type);
+    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,Storage type);
   };
 
 
@@ -37,10 +38,11 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void FlashBitmapWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int type) {
+  inline void FlashBitmapWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,Storage type) {
 
     int16_t params[4];
     uint32_t dataSize,flashAddress;
+    Panel::LcdPanel& gl(panel.getGraphicsLibrary());
 
     // get the rectangle parameters
 
@@ -60,9 +62,24 @@ namespace cmd {
     flashAddress=0;
     commandBuffer.read(reinterpret_cast<uint8_t *>(&flashAddress),3);
 
-    FlashGraphics fg(panel);
+    // set up the drawing rectangle and get ready for receiving data
 
-    if(type==UNCOMPRESSED)
-      fg.drawUncompressedBitmap(rc,flashAddress,dataSize);
+    gl.moveTo(rc);
+    gl.beginWriting();
+
+    // need a flash input stream to get the data
+
+    FlashInputStream inputStream(flashAddress,dataSize);
+
+    // draw the graphic
+
+    if(type==Storage::COMPRESSED) {
+      LzgDecompressionStream decompressor(inputStream,dataSize);
+      gl.drawBitmap(rc,decompressor);
+    }
+    else if(type==Storage::UNCOMPRESSED)
+      gl.drawBitmap(rc,inputStream);
+    else if(type==Storage::JPEG)
+      gl.drawJpeg(rc,inputStream);
   }
 }

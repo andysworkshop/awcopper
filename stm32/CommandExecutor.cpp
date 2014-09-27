@@ -171,8 +171,8 @@ void CommandExecutor::processNextCommand() {
       FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::JPEG);
       break;
 
-    case CommandId::TPIN_SET_MODE:
-      TpinMode::execute(_commandBuffer);
+    case CommandId::TPIN_GPIO_CONFIGURE:
+      TpinGpioMode::execute(_tpinManager,_commandBuffer);
       break;
 
     default:

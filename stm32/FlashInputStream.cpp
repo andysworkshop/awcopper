@@ -37,6 +37,19 @@ FlashInputStream::FlashInputStream(uint32_t sourceAddress,uint32_t totalSize) :
 
 
 /*
+ * Destructor
+ */
+
+FlashInputStream::~FlashInputStream() {
+
+  // don't want to inadvertently release the buffer if DMA
+  // is still using it. Not likely in our use case but let's be safe.
+
+  waitPending();
+}
+
+
+/*
  * Read single
  */
 

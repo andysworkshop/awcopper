@@ -17,6 +17,7 @@ class CommandExecutor {
   protected:
     circular_buffer<uint8_t>& _commandBuffer;
     Panel& _panel;
+    TPinManager _tpinManager;
     StatusIndicators _indicators;
 
   protected:

@@ -21,6 +21,8 @@ using namespace stm32plus::display;
 #include "Panel.h"
 #include "Flash.h"
 #include "FlashInputStream.h"
+#include "TPin.h"
+#include "TPinManager.h"
 
 #include "commands/CommandId.h"
 #include "commands/SetBacklight.h"
@@ -44,6 +46,7 @@ using namespace stm32plus::display;
 #include "commands/FlashBitmapWriter.h"
 #include "commands/SetFont.h"
 #include "commands/TextOps.h"
+#include "commands/tpin/TpinGpioMode.h"
 
 #include "StatusIndicators.h"
 #include "CommandReader.h"

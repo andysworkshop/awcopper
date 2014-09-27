@@ -44,6 +44,7 @@ class FlashInputStream : public Flash,
 
   public:
     FlashInputStream(uint32_t sourceAddress,uint32_t totalSize);
+    virtual ~FlashInputStream();
 
     // overrides from InputStream
 

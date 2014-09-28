@@ -171,8 +171,28 @@ void CommandExecutor::processNextCommand() {
       FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::JPEG);
       break;
 
+    case CommandId::TPIN_TIMER_SET_FREQUENCY:
+      TpinTimerFrequency::execute(_tpinManager,_commandBuffer);
+      break;
+
+    case CommandId::TPIN_TIMER_INIT_COMPARE:
+      TpinTimerInitCompare::execute(_tpinManager,_commandBuffer);
+      break;
+
+    case CommandId::TPIN_TIMER_SET_COMPARE:
+      TpinTimerSetCompare::execute(_tpinManager,_commandBuffer);
+      break;
+
+    case CommandId::TPIN_TIMER_CONTROL:
+      TpinTimerControl::execute(_tpinManager,_commandBuffer);
+      break;
+
     case CommandId::TPIN_GPIO_CONFIGURE:
       TpinGpioMode::execute(_tpinManager,_commandBuffer);
+      break;
+
+    case CommandId::TPIN_GPIO_CONTROL:
+      TpinGpioControl::execute(_tpinManager,_commandBuffer);
       break;
 
     default:

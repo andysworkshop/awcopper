@@ -66,8 +66,14 @@ class TPinManager {
     TPin<T2_TimerType,gpio::PA3> _t2;
 
   public:
-    void enableGpio(TPinNumber pinNumber,GPIOSpeed_TypeDef speed,Gpio::GpioOutputType outputType);
-    void enableTimer(TPinNumber pinNumber,uint32_t period,uint16_t prescaler,uint16_t clockDivision,uint16_t counterMode);
+    void setupGpio(TPinNumber pinNumber,GPIOSpeed_TypeDef speed,Gpio::GpioOutputType outputType);
+    void setupTimer(TPinNumber pinNumber,uint32_t period,uint16_t prescaler,uint16_t clockDivision,uint16_t counterMode);
+
+    void initCompare(TPinNumber pinNumber,uint32_t compareValue,uint16_t ocMode,uint16_t polarity,uint16_t preload) const;
+    void setCompare(TPinNumber pinNumber,uint32_t compareValue) const;
+
+    void controlTimer(TPinNumber pinNumber,bool enable) const;
+    void controlGpio(TPinNumber pinNumber,bool set) const;
 };
 
 
@@ -75,12 +81,12 @@ class TPinManager {
  * Enable a pin for GPIO
  */
 
-inline void TPinManager::enableGpio(TPinNumber pinNumber,GPIOSpeed_TypeDef speed,Gpio::GpioOutputType outputType) {
+inline void TPinManager::setupGpio(TPinNumber pinNumber,GPIOSpeed_TypeDef speed,Gpio::GpioOutputType outputType) {
 
   if(pinNumber==TPinNumber::T1)
-    _t1.enableGpio(speed,outputType);
+    _t1.setupGpio(speed,outputType);
   else
-    _t2.enableGpio(speed,outputType);
+    _t2.setupGpio(speed,outputType);
 }
 
 
@@ -88,10 +94,63 @@ inline void TPinManager::enableGpio(TPinNumber pinNumber,GPIOSpeed_TypeDef speed
  * Enable a pin for timing
  */
 
-inline void TPinManager::enableTimer(TPinNumber pinNumber,uint32_t period,uint16_t prescaler,uint16_t clockDivision,uint16_t counterMode) {
+inline void TPinManager::setupTimer(TPinNumber pinNumber,uint32_t period,uint16_t prescaler,uint16_t clockDivision,uint16_t counterMode) {
 
   if(pinNumber==TPinNumber::T1)
-    _t1.enableTimer(period,prescaler,clockDivision,counterMode);
+    _t1.setupTimer(period,prescaler,clockDivision,counterMode);
   else
-    _t2.enableTimer(period,prescaler,clockDivision,counterMode);
+    _t2.setupTimer(period,prescaler,clockDivision,counterMode);
 }
+
+
+/*
+ * Set the duty cycle of a PWM signal
+ */
+
+inline void TPinManager::initCompare(TPinNumber pinNumber,uint32_t compareValue,uint16_t ocMode,uint16_t polarity,uint16_t preload) const {
+
+  if(pinNumber==TPinNumber::T1)
+    _t1.initCompare(compareValue,ocMode,polarity,preload);
+  else
+    _t2.initCompare(compareValue,ocMode,polarity,preload);
+}
+
+
+/*
+ * Set the compare value for the channel
+ */
+
+inline void TPinManager::setCompare(TPinNumber pinNumber,uint32_t compareValue) const {
+
+  if(pinNumber==TPinNumber::T1)
+    _t1.setCompare(compareValue);
+  else
+    _t2.setCompare(compareValue);
+}
+
+
+/*
+ * Turn a timer on or off
+ */
+
+inline void TPinManager::controlTimer(TPinNumber pinNumber,bool enable) const {
+
+  if(pinNumber==TPinNumber::T1)
+    _t1.controlTimer(enable);
+  else
+    _t2.controlTimer(enable);
+}
+
+
+/*
+ * Set the GPIO level
+ */
+
+inline void TPinManager::controlGpio(TPinNumber pinNumber,bool set) const {
+
+  if(pinNumber==TPinNumber::T1)
+    _t1.controlGpio(set);
+  else
+    _t2.controlGpio(set);
+}
+

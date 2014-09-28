@@ -10,18 +10,17 @@
 namespace cmd {
 
   /*
-   * Set the GPIO mode of the T1 or T2 pin.
+   * enable or disable timer output
    *
    * Parameters:
    *   0 : pin number  : 1 = T1, 2= T2
-   *   1 : slew rate   : 0 = 2MHz, 1 = 10MHz, 3 = 50MHz
-   *   2 : output type : 0 = push-pull, 1 = open-drain
+   *   1 : 0 = off, 1 = on
    */
 
-  struct TpinGpioMode {
+  struct TpinTimerControl {
 
     enum {
-      PARAMETER_COUNT = 3,
+      PARAMETER_COUNT=2
     };
 
     static void execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer);
@@ -32,20 +31,21 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void TpinGpioMode::execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer) {
+  inline void TpinTimerControl::execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer) {
 
-    uint8_t params[3];
+    uint8_t params[2];
 
     // read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
+    commandBuffer.read(params,PARAMETER_COUNT);
 
-    // initialise the pin
+    // initialise the channel
 
-    pinManager.setupGpio(
+    pinManager.controlTimer(
         static_cast<TPinManager::TPinNumber>(params[0]),      // pin number
-        static_cast<GPIOSpeed_TypeDef>(params[1]),            // slew rate
-        static_cast<Gpio::GpioOutputType>(params[2])          // output type
+        !!params[1]
       );
   }
 }
+

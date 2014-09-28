@@ -11,8 +11,9 @@
  * Constructor
  */
 
-CommandExecutor::CommandExecutor(circular_buffer<uint8_t>& commandBuffer,Panel& panel,StatusIndicators& indicators)
-  : _commandBuffer(commandBuffer),
+CommandExecutor::CommandExecutor(CommandReader& reader,Panel& panel,StatusIndicators& indicators)
+  : _reader(reader),
+    _commandBuffer(reader.getCommandBuffer()),
     _panel(panel),
     _indicators(indicators ){
 }
@@ -36,6 +37,7 @@ void CommandExecutor::run() {
 
     do {
       processNextCommand();
+      _reader.checkPending();
     } while(_commandBuffer.availableToRead()!=0);
 
     // buffered commands processed, switch off the indicator

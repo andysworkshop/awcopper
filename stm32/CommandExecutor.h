@@ -15,6 +15,7 @@
 class CommandExecutor {
 
   protected:
+    CommandReader& _reader;
     circular_buffer<uint8_t>& _commandBuffer;
     Panel& _panel;
     TPinManager _tpinManager;
@@ -24,6 +25,6 @@ class CommandExecutor {
     void processNextCommand();
 
   public:
-    CommandExecutor(circular_buffer<uint8_t>& commandBuffer,Panel& panel,StatusIndicators& indicators);
+    CommandExecutor(CommandReader& reader,Panel& panel,StatusIndicators& indicators);
     void run();
 };

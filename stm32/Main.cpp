@@ -40,7 +40,7 @@ int main() {
 
   // declare the command reader
 
-  CommandExecutor executor(commandBuffer,panel,indicators);
+  CommandExecutor executor(reader,panel,indicators);
 
   // start the reader and run the executor
 

@@ -53,148 +53,144 @@ void CommandExecutor::run() {
 
 void CommandExecutor::processNextCommand() {
 
-  using namespace cmd;
-
-  CommandId id;
-
-  // read the command from the buffer
-
-  id=static_cast<CommandId>(_commandBuffer.read());
-
   // execute the command
 
-  switch(id) {
+  switch(_commandBuffer.read()) {
 
-    case CommandId::SET_BACKLIGHT:
-      SetBacklight::execute(_panel,_commandBuffer);
+    case cmd::RESET:
+      cmd::Reset::execute();
       break;
 
-    case CommandId::SET_WINDOW:
-      SetWindow::execute(_panel,_commandBuffer);
+    case cmd::SET_BACKLIGHT:
+      cmd::SetBacklight::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::FOREGROUND_COLOUR:
-      Colour::execute(_panel,_commandBuffer,true);
+    case cmd::SET_WINDOW:
+      cmd::SetWindow::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::BACKGROUND_COLOUR:
-      Colour::execute(_panel,_commandBuffer,false);
+    case cmd::FOREGROUND_COLOUR:
+      cmd::Colour::execute(_panel,_commandBuffer,true);
       break;
 
-    case CommandId::RECTANGLE:
-      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::OUTLINED);
+    case cmd::BACKGROUND_COLOUR:
+      cmd::Colour::execute(_panel,_commandBuffer,false);
       break;
 
-    case CommandId::FILL_RECTANGLE:
-      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::FILLED);
+    case cmd::RECTANGLE:
+      cmd::RectangleOps::execute(_panel,_commandBuffer,cmd::RectangleOps::OUTLINED);
       break;
 
-    case CommandId::CLEAR_RECTANGLE:
-      RectangleOps::execute(_panel,_commandBuffer,RectangleOps::CLEARED);
+    case cmd::FILL_RECTANGLE:
+      cmd::RectangleOps::execute(_panel,_commandBuffer,cmd::RectangleOps::FILLED);
       break;
 
-    case CommandId::POLYLINE:
-      Polyline::execute(_panel,_commandBuffer);
+    case cmd::CLEAR_RECTANGLE:
+      cmd::RectangleOps::execute(_panel,_commandBuffer,cmd::RectangleOps::CLEARED);
       break;
 
-    case CommandId::LINE:
-      Line::execute(_panel,_commandBuffer);
+    case cmd::POLYLINE:
+      cmd::Polyline::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::PLOT:
-      Plot::execute(_panel,_commandBuffer);
+    case cmd::LINE:
+      cmd::Line::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::ELLIPSE:
-      EllipseOps::execute(_panel,_commandBuffer,EllipseOps::OUTLINED);
+    case cmd::PLOT:
+      cmd::Plot::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::FILL_ELLIPSE:
-      EllipseOps::execute(_panel,_commandBuffer,EllipseOps::FILLED);
+    case cmd::ELLIPSE:
+      cmd::EllipseOps::execute(_panel,_commandBuffer,cmd::EllipseOps::OUTLINED);
       break;
 
-    case CommandId::BEGIN_WRITING:
-      BeginWriting::execute(_panel);
+    case cmd::FILL_ELLIPSE:
+      cmd::EllipseOps::execute(_panel,_commandBuffer,cmd::EllipseOps::FILLED);
       break;
 
-    case CommandId::WRITE_DATA:
-      WriteData::execute(_panel,_commandBuffer);
+    case cmd::BEGIN_WRITING:
+      cmd::BeginWriting::execute(_panel);
       break;
 
-    case CommandId::FONT:
-      SetFont::execute(_panel,_commandBuffer);
+    case cmd::WRITE_DATA:
+      cmd::WriteData::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::WRITE_TEXT:
-      TextOps::execute(_panel,_commandBuffer,TextOps::OUTLINED);
+    case cmd::FONT:
+      cmd::SetFont::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::WRITE_FILLED_TEXT:
-      TextOps::execute(_panel,_commandBuffer,TextOps::FILLED);
+    case cmd::WRITE_TEXT:
+      cmd::TextOps::execute(_panel,_commandBuffer,cmd::TextOps::OUTLINED);
       break;
 
-    case CommandId::GAMMA:
-      Gamma::execute(_panel,_commandBuffer);
+    case cmd::WRITE_FILLED_TEXT:
+      cmd::TextOps::execute(_panel,_commandBuffer,cmd::TextOps::FILLED);
       break;
 
-    case CommandId::ERASE_FLASH_DEVICE:
-      FlashEraseDevice::execute();
+    case cmd::GAMMA:
+      cmd::Gamma::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::ERASE_FLASH_SECTOR:
-      FlashEraseSector::execute(_commandBuffer);
+    case cmd::ERASE_FLASH_DEVICE:
+      cmd::FlashEraseDevice::execute();
       break;
 
-    case CommandId::PROGRAM_FLASH:
-      FlashProgram::execute(_commandBuffer);
+    case cmd::ERASE_FLASH_SECTOR:
+      cmd::FlashEraseSector::execute(_commandBuffer);
       break;
 
-    case CommandId::WRITE_JPEG:
-      JpegWriter::execute(_panel,_commandBuffer);
+    case cmd::PROGRAM_FLASH:
+      cmd::FlashProgram::execute(_commandBuffer);
       break;
 
-    case CommandId::WRITE_BITMAP:
-      BitmapWriter::execute(_panel,_commandBuffer,BitmapWriter::UNCOMPRESSED);
+    case cmd::WRITE_JPEG:
+      cmd::JpegWriter::execute(_panel,_commandBuffer);
       break;
 
-    case CommandId::WRITE_LZG_BITMAP:
-      BitmapWriter::execute(_panel,_commandBuffer,BitmapWriter::COMPRESSED);
+    case cmd::WRITE_BITMAP:
+      cmd::BitmapWriter::execute(_panel,_commandBuffer,cmd::BitmapWriter::UNCOMPRESSED);
       break;
 
-    case CommandId::WRITE_FLASH_BITMAP:
-      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::UNCOMPRESSED);
+    case cmd::WRITE_LZG_BITMAP:
+      cmd::BitmapWriter::execute(_panel,_commandBuffer,cmd::BitmapWriter::COMPRESSED);
       break;
 
-    case CommandId::WRITE_FLASH_LZG_BITMAP:
-      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::COMPRESSED);
+    case cmd::WRITE_FLASH_BITMAP:
+      cmd::FlashBitmapWriter::execute(_panel,_commandBuffer,cmd::FlashBitmapWriter::Storage::UNCOMPRESSED);
       break;
 
-    case CommandId::WRITE_FLASH_JPEG:
-      FlashBitmapWriter::execute(_panel,_commandBuffer,FlashBitmapWriter::Storage::JPEG);
+    case cmd::WRITE_FLASH_LZG_BITMAP:
+      cmd::FlashBitmapWriter::execute(_panel,_commandBuffer,cmd::FlashBitmapWriter::Storage::COMPRESSED);
       break;
 
-    case CommandId::TPIN_TIMER_SET_FREQUENCY:
-      TpinTimerFrequency::execute(_tpinManager,_commandBuffer);
+    case cmd::WRITE_FLASH_JPEG:
+      cmd::FlashBitmapWriter::execute(_panel,_commandBuffer,cmd::FlashBitmapWriter::Storage::JPEG);
       break;
 
-    case CommandId::TPIN_TIMER_INIT_COMPARE:
-      TpinTimerInitCompare::execute(_tpinManager,_commandBuffer);
+    case cmd::TPIN_TIMER_SET_FREQUENCY:
+      cmd::TpinTimerFrequency::execute(_tpinManager,_commandBuffer);
       break;
 
-    case CommandId::TPIN_TIMER_SET_COMPARE:
-      TpinTimerSetCompare::execute(_tpinManager,_commandBuffer);
+    case cmd::TPIN_TIMER_INIT_COMPARE:
+      cmd::TpinTimerInitCompare::execute(_tpinManager,_commandBuffer);
       break;
 
-    case CommandId::TPIN_TIMER_CONTROL:
-      TpinTimerControl::execute(_tpinManager,_commandBuffer);
+    case cmd::TPIN_TIMER_SET_COMPARE:
+      cmd::TpinTimerSetCompare::execute(_tpinManager,_commandBuffer);
       break;
 
-    case CommandId::TPIN_GPIO_CONFIGURE:
-      TpinGpioMode::execute(_tpinManager,_commandBuffer);
+    case cmd::TPIN_TIMER_CONTROL:
+      cmd::TpinTimerControl::execute(_tpinManager,_commandBuffer);
       break;
 
-    case CommandId::TPIN_GPIO_CONTROL:
-      TpinGpioControl::execute(_tpinManager,_commandBuffer);
+    case cmd::TPIN_GPIO_CONFIGURE:
+      cmd::TpinGpioMode::execute(_tpinManager,_commandBuffer);
+      break;
+
+    case cmd::TPIN_GPIO_CONTROL:
+      cmd::TpinGpioControl::execute(_tpinManager,_commandBuffer);
       break;
 
     default:

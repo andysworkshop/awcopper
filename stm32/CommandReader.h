@@ -29,7 +29,7 @@ class CommandReader {
     circular_buffer<uint8_t>& _commandBuffer;
     StatusIndicators _indicators;
     scoped_ptr<MyI2C> _i2c;
-    volatile bool _pending;
+    volatile bool _suspended;
 
   protected:
     void onInterrupt(I2CEventType eventType);

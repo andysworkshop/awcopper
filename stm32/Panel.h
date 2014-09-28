@@ -17,7 +17,7 @@ class Panel {
 
     typedef Gpio16BitAccessMode<Panel,COLOURS_16BIT,48,42,42> LcdAccessMode;
     typedef R61523PwmBacklight<LcdAccessMode> LcdBacklight;
-    typedef R61523_Landscape_64K_TypeA<LcdAccessMode> LcdPanel;
+    typedef R61523_Landscape_64K_TypeB<LcdAccessMode> LcdPanel;
 
     enum {
       Port_DATA    = GPIOB_BASE,

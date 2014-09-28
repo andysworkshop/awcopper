@@ -14,7 +14,7 @@
 CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators)
   : _commandBuffer(commandBuffer),
     _indicators(indicators),
-    _pending(false) {
+    _suspended(false) {
 
   MyI2C::Parameters params;
 
@@ -40,7 +40,7 @@ void CommandReader::start() {
 
   // enable the interrupts and the peripheral
 
-  _i2c->clearPendingInterruptsFlag(I2C_IT_RXI);
+  _i2c->clearPendingInterruptsFlag(I2C_IT_RXI | I2C_IT_TXI | I2C_IT_ERRI | I2C_IT_TCI | I2C_IT_STOPI | I2C_IT_NACKI | I2C_IT_ADDRI);
   _i2c->enableInterrupts(I2C_IT_RXI | I2C_IT_TXI | I2C_IT_ERRI | I2C_IT_TCI | I2C_IT_STOPI | I2C_IT_NACKI | I2C_IT_ADDRI);
   _i2c->enablePeripheral();
 }
@@ -58,15 +58,18 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
     case I2CEventType::EVENT_RECEIVE:                   // data received
 
-      // is the buffer full?
+      // write the byte
+
+      _commandBuffer.write(I2C_ReceiveData(*_i2c));   // add to the circular buffer
 
       full=_commandBuffer.availableToWrite()==0;
+      _indicators.setFull(full);                      // set/reset the full LED
 
-      if(full)
-        _pending=true;                                // SCL is stretched until we read RXDR
-      else {
-        _commandBuffer.write(I2C_ReceiveData(*_i2c));   // add to the circular buffer
-        _indicators.setFull(full);                      // set/reset the full LED
+      // is the buffer full?
+
+      if(full) {
+        _i2c->disableInterrupts(I2C_IT_RXI);
+        _suspended=true;                                // SCL is stretched until we read RXDR
       }
       break;
 
@@ -82,14 +85,8 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
 void CommandReader::checkPending() {
 
-  if(_pending && _commandBuffer.availableToWrite()>0) {
-
-    // the read is highly likely to trigger the next read so interrupts must be masked
-    // to avoid a race condition
-
-    Nvic::disableAllInterrupts();
-    _commandBuffer.write(I2C_ReceiveData(*_i2c));
-    _pending=false;
-    Nvic::enableAllInterrupts();
+  if(_suspended && _commandBuffer.availableToWrite()>0) {
+    _suspended=false;
+    _i2c->enableInterrupts(I2C_IT_RXI);
   }
 }

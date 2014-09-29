@@ -24,11 +24,8 @@ namespace awc {
    */
 
   void CoProcessor::begin() {
-
     ::Wire.begin();
     reset();
-
-    delay(100);
   }
 
 
@@ -50,8 +47,11 @@ namespace awc {
    * reset the STM32 with a zero length frame
    */
 
-  uint16_t reset() {
-    return 0;
+  void CoProcessor::reset() {
+    ::Wire.beginTransmission(SLAVE_ADDRESS);
+    ::Wire.endTransmission();
+
+    delay(1000);
   }
 
 

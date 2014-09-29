@@ -33,6 +33,7 @@ namespace awc {
 
     public:
       void begin();
+      void reset();
 
       CoProcessor& operator<<(uint16_t count);
   };

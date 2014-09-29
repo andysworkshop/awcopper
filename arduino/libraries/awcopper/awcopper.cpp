@@ -24,6 +24,7 @@ namespace awc {
    */
 
   void CoProcessor::begin() {
+
     ::Wire.begin();
     reset();
 
@@ -46,13 +47,11 @@ namespace awc {
 
 
   /*
-   * reset the STM32
+   * reset the STM32 with a zero length frame
    */
 
   uint16_t reset() {
-
-    *CoProcessor::buffer=cmd::RESET;
-    return 1;
+    return 0;
   }
 
 

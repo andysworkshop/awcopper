@@ -19,7 +19,6 @@ namespace cmd {
      * Non-graphical commands
      */
 
-    RESET,
     SET_BACKLIGHT,
     SET_WINDOW,
     SLEEP,

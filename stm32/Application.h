@@ -26,7 +26,6 @@ using namespace stm32plus::display;
 
 #include "../common/CommandId.h"
 
-#include "commands/Reset.h"
 #include "commands/SetBacklight.h"
 #include "commands/SetWindow.h"
 #include "commands/Colour.h"

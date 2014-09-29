@@ -57,10 +57,6 @@ void CommandExecutor::processNextCommand() {
 
   switch(_commandBuffer.read()) {
 
-    case cmd::RESET:
-      cmd::Reset::execute();
-      break;
-
     case cmd::SET_BACKLIGHT:
       cmd::SetBacklight::execute(_panel,_commandBuffer);
       break;

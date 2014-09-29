@@ -16,9 +16,14 @@ class CommandReader {
 
   protected:
 
+    /*
+     * Peripheral definitions
+     */
+
     enum {
       I2C_ADDRESS = 0x38        // peripheral slave address
     };
+
 
     /*
      * Declare a type for the I2C peripheral
@@ -30,6 +35,7 @@ class CommandReader {
     StatusIndicators _indicators;
     scoped_ptr<MyI2C> _i2c;
     volatile bool _suspended;
+    bool _addressReceived;
 
   protected:
     void onInterrupt(I2CEventType eventType);

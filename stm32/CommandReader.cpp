@@ -14,7 +14,8 @@
 CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators)
   : _commandBuffer(commandBuffer),
     _indicators(indicators),
-    _suspended(false) {
+    _suspended(false),
+    _addressReceived(false) {
 
   MyI2C::Parameters params;
 
@@ -56,7 +57,15 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
   switch(eventType) {
 
-    case I2CEventType::EVENT_RECEIVE:                   // data received
+    case I2CEventType::EVENT_ADDRESS_MATCH:
+      _addressReceived=true;
+      break;
+
+    case I2CEventType::EVENT_RECEIVE:                 // data received
+
+      // got some data
+
+      _addressReceived=false;
 
       // write the byte
 
@@ -69,8 +78,15 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
       if(full) {
         _i2c->disableInterrupts(I2C_IT_RXI);
-        _suspended=true;                                // SCL is stretched until we read RXDR
+        _suspended=true;                              // SCL is stretched until we read RXDR
       }
+      break;
+
+    case I2CEventType::EVENT_STOP_BIT_RECEIVED:
+      if(_addressReceived)                            // no data in frame? must be a reset request
+        NVIC_SystemReset();
+      else
+        _addressReceived=false;
       break;
 
     default:

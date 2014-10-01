@@ -16,7 +16,7 @@ namespace awc {
    * Static class member initialisation
    */
 
-  uint8_t CoProcessor::buffer[32];
+  uint8_t CoProcessor::buffer[BUFFER_LENGTH];
 
 
   /*
@@ -34,11 +34,11 @@ namespace awc {
    */
 
   CoProcessor& CoProcessor::operator<<(uint16_t count) {
-
-    ::Wire.beginTransmission(SLAVE_ADDRESS);
-    ::Wire.write(CoProcessor::buffer,count);
-    ::Wire.endTransmission();
-
+    if(count>0) {
+      ::Wire.beginTransmission(SLAVE_ADDRESS);
+      ::Wire.write(CoProcessor::buffer,count);
+      ::Wire.endTransmission();
+    }
     return *this;
   }
 
@@ -67,6 +67,41 @@ namespace awc {
     *ptr=percentage;
 
     return 2;
+  }
+  
+
+  /*
+   * Send the panel to sleep
+   */
+
+  uint16_t sleep() {
+    *CoProcessor::buffer=cmd::SLEEP;
+    return 1;
+  }
+
+
+  /*
+   * Wake the panel up
+   */
+
+  uint16_t wake() {
+    *CoProcessor::buffer=cmd::WAKE;
+    return 1;
+  }
+
+
+  /*
+   * Set the gamma for the panel
+   */
+
+  uint16_t gamma(const Gamma& gamma) {
+
+    uint8_t *ptr=CoProcessor::buffer;
+
+    *ptr++=cmd::GAMMA;
+    
+    memcpy(ptr,gamma._gamma,sizeof(gamma._gamma));
+    return 1+sizeof(gamma._gamma);
   }
 
 
@@ -105,38 +140,38 @@ namespace awc {
 
   namespace {
 
-    uint16_t rectangleOp(uint8_t operation,uint16_t x,uint16_t y,uint16_t width,uint16_t height) {
+    uint16_t rectangleOp(uint8_t operation,const Rectangle& rc) {
 
       uint8_t *ptr=CoProcessor::buffer;
 
       *ptr++=operation;
 
-      *ptr++=x;
-      *ptr++=x >> 8;
+      *ptr++=rc.X;
+      *ptr++=rc.X >> 8;
 
-      *ptr++=y;
-      *ptr++=y >> 8;
+      *ptr++=rc.Y;
+      *ptr++=rc.Y >> 8;
 
-      *ptr++=width;
-      *ptr++=width >> 8;
+      *ptr++=rc.Width;
+      *ptr++=rc.Width >> 8;
 
-      *ptr++=height;
-      *ptr++=height >> 8;
+      *ptr++=rc.Height;
+      *ptr++=rc.Height >> 8;
 
       return 9;
     }
   }
 
-  uint16_t clearRectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height) {
-    return rectangleOp(awc::cmd::CLEAR_RECTANGLE,x,y,width,height);
+  uint16_t clearRectangle(const Rectangle& rc) {
+    return rectangleOp(awc::cmd::CLEAR_RECTANGLE,rc);
   }
 
-  uint16_t fillRectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height) {
-    return rectangleOp(awc::cmd::FILL_RECTANGLE,x,y,width,height);
+  uint16_t fillRectangle(const Rectangle& rc) {
+    return rectangleOp(awc::cmd::FILL_RECTANGLE,rc);
   }
 
-  uint16_t rectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height) {
-    return rectangleOp(awc::cmd::RECTANGLE,x,y,width,height);
+  uint16_t rectangle(const Rectangle& rc) {
+    return rectangleOp(awc::cmd::RECTANGLE,rc);
   }
 
 
@@ -144,24 +179,57 @@ namespace awc {
    * Line from (x1,y1) to (x2,y2)
    */
 
-  uint16_t line(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2) {
+  uint16_t line(const Point& p1,const Point& p2) {
 
     uint8_t *ptr=CoProcessor::buffer;
 
     *ptr++=cmd::LINE;
 
-    *ptr++=x1;
-    *ptr++=x1 >> 8;
+    *ptr++=p1.X;
+    *ptr++=p1.X >> 8;
 
-    *ptr++=y1;
-    *ptr++=y1 >> 8;
+    *ptr++=p1.Y;
+    *ptr++=p1.Y >> 8;
 
-    *ptr++=x2;
-    *ptr++=x2 >> 8;
+    *ptr++=p2.X;
+    *ptr++=p2.X >> 8;
 
-    *ptr++=y2;
-    *ptr++=y2 >> 8;
+    *ptr++=p2.Y;
+    *ptr++=p2.Y >> 8;
 
     return 9;
+  }
+  
+
+  /*
+   * Draw a "polyline" which is a sequence of line segments connecting the
+   * points that you supply in this method
+   */
+
+  uint16_t polyline(const Point *p,uint8_t count) {
+
+    // check for nothing
+
+    if(count==0)
+      return;
+
+    // command and count first
+
+    WireStream stream(cmd::POLYLINE);
+
+    stream.write(count);
+    
+    while(count--) {
+
+      stream.write(p.X);
+      stream.write(p.X >> 8);
+
+      stream.write(p.Y);
+      stream.write(p.Y >> 8);
+
+      p++;
+    }
+
+    return 0;
   }
 }

@@ -6,7 +6,10 @@
 
 #pragma once
 
-#include "colournames.h"
+#include "ColourNames.h"
+#include "Rectangle.h"
+#include "Point.h"
+#include "Gamma.h"
 
 
 namespace awc {
@@ -29,7 +32,12 @@ namespace awc {
         SLAVE_ADDRESS = 0x38
       };
 
-      static uint8_t buffer[32];
+      /*
+       * Commands get buffered here pending transmission. BUFFER_LENGTH is an extremely 
+       * poorly named macro that you'll find in <Wire.h>.
+       */
+
+      static uint8_t buffer[BUFFER_LENGTH];
 
     public:
       void begin();
@@ -38,17 +46,23 @@ namespace awc {
       CoProcessor& operator<<(uint16_t count);
   };
 
-
   /*
    * Command declarations
    */
 
   uint16_t backlight(uint8_t percentage);
+  uint16_t window(const Rectangle& rc);
+  uint16_t sleep();
+  uint16_t wake();
+  uint16_t gamma(const Gamma& gamma);
+
   uint16_t background(uint32_t colorref);
   uint16_t foreground(uint32_t colorref);
-  uint16_t clearRectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
-  uint16_t fillRectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
-  uint16_t rectangle(uint16_t x,uint16_t y,uint16_t width,uint16_t height);
-  uint16_t line(uint16_t x1,uint16_t y1,uint16_t x2,uint16_t y2);
-  uint16_t reset();
+
+  uint16_t clearRectangle(const Rectangle& rc);
+  uint16_t fillRectangle(const Rectangle& rc);
+  uint16_t rectangle(const Rectangle& rc);
+
+  uint16_t line(const Point& p1,const Point& p2);
+  uint16_t polyline(const Point *p,uint8_t count);
 }

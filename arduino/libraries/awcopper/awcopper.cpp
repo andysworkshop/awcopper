@@ -8,6 +8,7 @@
 #include <Wire.h>
 #include <stdint.h>
 #include "awcopper.h"
+#include "WireStream.h"
 
 
 namespace awc {
@@ -211,7 +212,7 @@ namespace awc {
     // check for nothing
 
     if(count==0)
-      return;
+      return 0;
 
     // command and count first
 
@@ -221,14 +222,59 @@ namespace awc {
     
     while(count--) {
 
-      stream.write(p.X);
-      stream.write(p.X >> 8);
+      stream.write(p->X);
+      stream.write(p->X >> 8);
 
-      stream.write(p.Y);
-      stream.write(p.Y >> 8);
+      stream.write(p->Y);
+      stream.write(p->Y >> 8);
 
       p++;
     }
+
+    return 0;
+  }
+
+
+  /*
+   * Select a new font
+   */
+
+  uint16_t font(FontId fid) {
+    
+    uint8_t *ptr=CoProcessor::buffer;
+
+    *ptr++=cmd::FONT;
+    *ptr=fid;
+
+    return 2;
+  }
+
+
+  /*
+   * Write a text string
+   */
+
+  uint16_t text(const Point& p,const char *str,TextMode textMode) {
+
+    // set up the output stream
+
+    WireStream stream(textMode==TRANSPARENT ? cmd::WRITE_TEXT : cmd::WRITE_FILLED_TEXT);
+
+    // write the point
+
+    stream.write(p.X);
+    stream.write(p.X >> 8);
+
+    stream.write(p.Y);
+    stream.write(p.Y >> 8);
+
+    // write out the string
+
+    do {
+      stream.write(*str);
+    } while(*str++);
+
+    // nothing for the operator to do, the stream takes care of it
 
     return 0;
   }

@@ -56,5 +56,10 @@ inline FontManager::FontManager() {
  */
 
 inline const Font& FontManager::getFont(uint8_t index) const {
+
+#if defined(DEBUG)
+  return *_fonts[index==0 ? index : 0];   // keeps the compiler quiet
+#else
   return *_fonts[index];
+#endif
 }

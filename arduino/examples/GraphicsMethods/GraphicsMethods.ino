@@ -2,9 +2,13 @@
 #include <awcopper.h>
 
 awc::CoProcessor copro;
+using awc::Rectangle;
+using awc::Point;
 
 void setup() {
 
+  Serial.begin(9600);
+  
   // initialise the library
   
   copro.begin();
@@ -12,8 +16,8 @@ void setup() {
   // clear to black and enable the backlight
   
   copro << awc::background(awc::BLACK)
-        << awc::clearRectangle(0,0,640,360)
-        << awc::backlight(100);
+        << awc::clearRectangle(Rectangle(0,0,640,360))
+        << awc::backlight(100); 
 }
 
 void loop() {
@@ -40,7 +44,7 @@ void lineDemo() {
     y2=random(359);
 
     copro << awc::foreground(random(0xffffff))  // random colour foreground
-          << awc::line(x1,y1,x2,y2);            // random line
+          << awc::line(Point(x1,y1),Point(x2,y2));            // random line
   }
 }
 
@@ -50,7 +54,31 @@ void lineDemo() {
  */
  
 void prompt(const char *str) {
-  copro << awc::clearRectangle(0,0,640,360)      // clear screen
-        << awc::foreground(awc::WHITE);          // set foreground to white
+
+  clearScreen();
+  
+  copro << awc::foreground(awc::WHITE)      // set foreground to white
+        << awc::font(awc::ATARI)            // select the Atari font
+        << awc::text(Point::Origin,str);    // text string at the origin
+ 
+ // wait for 3 secs
+ 
+ delay(3000);
+ 
+ // clear and return
+ 
+ clearScreen();
+}
+
+/*
+ * Clear the screen to black
+ */
+ 
+void clearScreen() {
+  
+  // clear screen
+ 
+  copro << awc::background(awc::BLACK)
+        << awc::clearRectangle(Rectangle(0,0,640,360));
 }
 

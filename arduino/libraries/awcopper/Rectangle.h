@@ -28,7 +28,6 @@ namespace awc {
 
     Rectangle()
       : X(), Y(), Width(), Height() {
-
     }
 
 

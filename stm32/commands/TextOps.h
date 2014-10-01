@@ -10,7 +10,7 @@
 namespace cmd {
 
   /*
-   * Rectangle operations (outlined, filled, cleared)
+   * Text operations (filled, cleared)
    *
    * Parameters:
    *   0,1  : top-left X

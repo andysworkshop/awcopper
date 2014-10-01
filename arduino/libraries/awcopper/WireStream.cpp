@@ -8,6 +8,7 @@
 #include <Wire.h>
 #include <stdint.h>
 #include "awcopper.h"
+#include "WireStream.h"
 
 
 namespace awc {
@@ -40,7 +41,7 @@ namespace awc {
 
     if(_bufindex) {
 
-      Wire.beginTransmission(SLAVE_ADDRESS);
+      Wire.beginTransmission(CoProcessor::SLAVE_ADDRESS);
       Wire.write(CoProcessor::buffer,_bufindex);
       Wire.endTransmission();
 
@@ -53,7 +54,7 @@ namespace awc {
    * Write a byte
    */
 
-  void write(uint8_t b) {
+  void WireStream::write(uint8_t b) {
 
     if(_bufindex==BUFFER_LENGTH)
       flush();

@@ -7,14 +7,43 @@
 #pragma once
 
 #include "ColourNames.h"
-#include "Rectangle.h"
+#include "Size.h"
 #include "Point.h"
+#include "Rectangle.h"
 #include "Gamma.h"
 
 
 namespace awc {
 
   #include "CommandId.h"
+
+
+  /*
+   * Font identifiers - order must match the STM32 FontManager initialisation
+   */
+   
+  enum FontId {
+    APPLE,
+    ATARI,
+    DOS,
+    KYROU_BOLD,
+    KYROU,
+    NINTENDO,
+    PIXELADE,
+    PROGGY,
+    GOLDFISH        
+  };
+
+
+  /*
+   * Text output modes
+   */
+
+   enum TextMode {
+     SOLID,
+     TRANSPARENT
+   };
+
 
   /*
    * Main coprocessor class.
@@ -65,4 +94,7 @@ namespace awc {
 
   uint16_t line(const Point& p1,const Point& p2);
   uint16_t polyline(const Point *p,uint8_t count);
+
+  uint16_t font(FontId fid);
+  uint16_t text(const Point& p,const char *str,TextMode textMode=TRANSPARENT);
 }

@@ -23,9 +23,12 @@ namespace awc {
       void flush();
 
     public:
+      WireStream();
       WireStream(uint8_t command);
+      
       ~WireStream();
 
       void write(uint8_t b);
+      void write(const void *buffer,uint16_t count);
   };
 }

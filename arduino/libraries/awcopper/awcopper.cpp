@@ -18,6 +18,7 @@ namespace awc {
    */
 
   uint8_t CoProcessor::buffer[BUFFER_LENGTH];
+  uint32_t CoProcessor::bytesRemaining=0;
 
 
   /*
@@ -41,6 +42,48 @@ namespace awc {
       ::Wire.endTransmission();
     }
     return *this;
+  }
+
+
+  /*
+   * stream in a single byte
+   */
+
+  CoProcessor& CoProcessor::operator<<(uint8_t byte) {
+
+    byteStream.write(byte);
+
+    if(--bytesRemaining==0)
+      byteStream.flush();
+  }
+
+
+  /*
+   * stream in a variable number of bytes
+   */
+
+  CoProcessor& CoProcessor::operator<<(const Bytes& bytes) {
+
+    byteStream.write(bytes._ptr,bytes._count);
+
+    bytesRemaining-=bytes._count;
+    
+    if(bytesRemaining==0)
+      byteStream.flush();
+  }
+ 
+
+  /*
+   * stream in a byte buffer. The buffer is assumed to contain exactly
+   * the correct number of bytes remaining
+   */
+
+  CoProcessor& operator<<(const uint8_t *bytes) {
+
+    byteStream.write(bytes,bytesRemaining);
+
+    bytesRemaining=0;
+    byteStream.flush();
   }
 
 
@@ -177,6 +220,73 @@ namespace awc {
 
 
   /*
+   * Plot a single point in the foreground colour 
+   */
+
+  uint16_t plot(const Point& p) {
+
+    uint8_t *ptr=CoProcessor::buffer;
+
+    *ptr++=cmd::PLOT;
+
+    *ptr++=p.X;
+    *ptr++=p.X >> 8;
+
+    *ptr++=p.Y;
+    *ptr++=p.Y >> 8;
+
+    return 5;
+  }
+
+
+  /*
+   * Ellipse operations
+   */
+
+  namespace {
+
+    uint16_t ellipseOp(uint8_t operation,const Point& p,const Size& size) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=operation;
+
+      *ptr++=p.X;
+      *ptr++=p.X >> 8;
+
+      *ptr++=p.Y;
+      *ptr++=p.Y >> 8;
+
+      *ptr++=size.Width;
+      *ptr++=size.Width >> 8;
+
+      *ptr++=size.Height;
+      *ptr++=size.Height >> 8;
+
+      return 9;
+    }
+  }
+
+
+  /*
+   * Draw an ellipse centered at [center] and with radii of [size]
+   */
+
+  uint16_t ellipse(const Point& center,const Size& size) {
+    return ellipseOp(cmd::ELLIPSE,center,size);
+  }
+  
+
+  /*
+   * Fill an ellipse centered at [center] and with radii of [size]
+   */
+
+  uint16_t fillEllipse(const Point& center,const Size& size) {
+    return ellipseOp(cmd::FILL_ELLIPSE,center,size);
+  }
+
+
+  /*
    * Line from (x1,y1) to (x2,y2)
    */
 
@@ -277,5 +387,109 @@ namespace awc {
     // nothing for the operator to do, the stream takes care of it
 
     return 0;
+  }
+
+
+  /*
+   * Issue the command to begin writing raw data. This must be followed by one or more
+   * calls to writeData() to actually transfer it
+   */
+
+  uint16_t beginWriting() {
+    *CoProcessor::buffer=cmd::BEGIN_WRITING;
+    return 1;
+  }
+
+
+  /*
+   * Write a block of raw data bytes to the display
+   */
+
+  uint16_t writeData(const void *data,uint16_t count) {
+
+    WireStream stream(cmd::WRITE_DATA);
+
+    stream.write(data,count);
+    return 0;
+  }
+
+
+  /*
+   * Erase the flash device
+   */
+
+  uint16_t eraseFlash() {
+    *CoProcessor::buffer=cmd::ERASE_FLASH_DEVICE;
+    return 1;
+  }
+
+
+  /*
+   * Flash sector erase operations. Addresses are 24-bit
+   */
+
+  namespace {
+
+    uint16_t eraseOp(uint8_t operation,uint32_t address) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::ERASE_FLASH_SECTOR;
+      *ptr++=operation;
+      *ptr++=address;
+      *ptr++=address >> 8;
+      *ptr++=address >> 16;
+
+      return 5;
+    }
+  }
+
+
+  /*
+   * Erase a 4Kb sector
+   */
+
+  uint16_t erase4KSector(uint32_t address) {
+    eraseOp(4,address);
+  }
+
+
+  /*
+   * Erase an 8Kb sector
+   */
+
+  uint16_t erase8KSector(uint32_t address) {
+    eraseOp(8,address);
+  }
+
+
+  /*
+   * Erase a 64Kb sector
+   */
+
+  uint16_t erase64KSector(uint32_t address) {
+    eraseOp(64,address);
+  }
+
+
+  /*
+   * Program a page in the flash device. A page is 256 bytes. This command must
+   * be followed by 256 bytes of data streamed into the coprocessor
+   */
+
+  uint16_t program(uint32_t address) {
+
+    uint8_t *ptr=CoProcessor::buffer;
+
+    // write the command and the address
+
+    *ptr++=cmd::PROGRAM_FLASH;
+    *ptr++=address;
+    *ptr++=address >> 8;
+    *ptr++=address >> 16;
+
+    // await 256 bytes of page data
+
+    CoProcessor::bytesRemaining=256;
   }
 }

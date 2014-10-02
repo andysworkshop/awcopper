@@ -15,8 +15,12 @@ namespace awc {
 
 
   /*
-   * Constructor
+   * Constructors
    */
+
+  WireStream::WireStream() {
+    _bufindex=0;
+  }
 
   WireStream::WireStream(uint8_t command) {
     *CoProcessor::buffer=command;
@@ -60,5 +64,18 @@ namespace awc {
       flush();
 
     CoProcessor::buffer[_bufindex++]=b;
+  }
+
+
+  /*
+   * Write a buffer
+   */
+
+  void WireStream::write(const void *buffer,uint16_t count) {
+
+    const uint8_t *ptr=reinterpret_cast<const uint8_t *>(buffer);
+
+    while(count--)
+      write(*ptr++);
   }
 }

@@ -11,7 +11,7 @@ void setup() {
   
   // initialise the library
   
-  copro.begin();
+  copro.begin(awc::KHZ_400);
 
   // clear to black and enable the backlight
   

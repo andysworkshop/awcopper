@@ -12,7 +12,8 @@
 #include "Rectangle.h"
 #include "Gamma.h"
 #include "Bytes.h"
- 
+#include "WireStream.h"
+
 
 namespace awc {
 
@@ -40,10 +41,20 @@ namespace awc {
    * Text output modes
    */
 
-   enum TextMode {
-     SOLID,
-     TRANSPARENT
-   };
+  enum TextMode {
+    SOLID,
+    TRANSPARENT
+  };
+
+
+  /*
+   * Possible I2C bus speeds
+   */
+   
+  enum BusSpeed {
+    KHZ_100,
+    KHZ_400
+  };
 
 
   /*
@@ -79,13 +90,10 @@ namespace awc {
       static uint32_t bytesRemaining;
 
     public:
-      void begin();
+      void begin(BusSpeed speed);
       void reset();
 
       CoProcessor& operator<<(uint16_t count);        // command buffer streaming
-
-      CoProcessor& operator<<(uint8_t byte);          // single byte data streaming
-      CoProcessor& operator<<(const uint8_t *bytes);  // remaining bytes data streaming
       CoProcessor& operator<<(const Bytes& bytes);    // variable bytes data streaming
   };
 

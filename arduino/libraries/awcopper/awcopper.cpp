@@ -8,7 +8,6 @@
 #include <Wire.h>
 #include <stdint.h>
 #include "awcopper.h"
-#include "WireStream.h"
 
 
 namespace awc {
@@ -25,8 +24,13 @@ namespace awc {
    * Initialise the wire library
    */
 
-  void CoProcessor::begin() {
+  void CoProcessor::begin(BusSpeed speed) {
+
     ::Wire.begin();
+    
+    if(speed==KHZ_400)
+      TWBR=12;
+    
     reset();
   }
 
@@ -46,19 +50,6 @@ namespace awc {
 
 
   /*
-   * stream in a single byte
-   */
-
-  CoProcessor& CoProcessor::operator<<(uint8_t byte) {
-
-    byteStream.write(byte);
-
-    if(--bytesRemaining==0)
-      byteStream.flush();
-  }
-
-
-  /*
    * stream in a variable number of bytes
    */
 
@@ -70,22 +61,10 @@ namespace awc {
     
     if(bytesRemaining==0)
       byteStream.flush();
+
+    return *this;
   }
  
-
-  /*
-   * stream in a byte buffer. The buffer is assumed to contain exactly
-   * the correct number of bytes remaining
-   */
-
-  CoProcessor& operator<<(const uint8_t *bytes) {
-
-    byteStream.write(bytes,bytesRemaining);
-
-    bytesRemaining=0;
-    byteStream.flush();
-  }
-
 
   /*
    * reset the STM32 with a zero length frame
@@ -450,7 +429,7 @@ namespace awc {
    */
 
   uint16_t erase4KSector(uint32_t address) {
-    eraseOp(4,address);
+    return eraseOp(4,address);
   }
 
 
@@ -459,7 +438,7 @@ namespace awc {
    */
 
   uint16_t erase8KSector(uint32_t address) {
-    eraseOp(8,address);
+    return eraseOp(8,address);
   }
 
 
@@ -468,7 +447,7 @@ namespace awc {
    */
 
   uint16_t erase64KSector(uint32_t address) {
-    eraseOp(64,address);
+    return eraseOp(64,address);
   }
 
 
@@ -481,7 +460,7 @@ namespace awc {
 
     uint8_t *ptr=CoProcessor::buffer;
 
-    // write the command and the address
+    // buffer the command and the address
 
     *ptr++=cmd::PROGRAM_FLASH;
     *ptr++=address;
@@ -491,5 +470,9 @@ namespace awc {
     // await 256 bytes of page data
 
     CoProcessor::bytesRemaining=256;
+
+    // 4 bytes written here
+
+    return 4;
   }
 }

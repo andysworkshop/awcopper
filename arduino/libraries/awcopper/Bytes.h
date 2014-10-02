@@ -21,7 +21,7 @@ namespace awc {
 
     Bytes(const void *ptr,uint32_t count)
       : _ptr(ptr),
-        _count(count) 
+        _count(count) { 
     }
   };
 }

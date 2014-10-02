@@ -19,9 +19,6 @@ namespace awc {
     protected:
       uint8_t _bufindex;
 
-    protected:
-      void flush();
-
     public:
       WireStream();
       WireStream(uint8_t command);
@@ -30,5 +27,7 @@ namespace awc {
 
       void write(uint8_t b);
       void write(const void *buffer,uint16_t count);
+
+      void flush();
   };
 }

@@ -17,24 +17,24 @@ import subprocess
 def usage():
 
     print """
-Usage: scons mode=<MODE>
+Usage: scons mode=<MODE> [-jX | -c]
 
-  <MODE>: debug/fast/small.
-    debug = -O0
-    fast  = -O3 (for fun only: compile size too large for target MCU)
-    small = -Os
+  <MODE>: debug/release.
+    debug   = -Og
+    release = combination of -Os and -O3
 
   Examples using -j to do a 4-job parallel build:
     scons mode=debug -j4
-    scons mode=fast -j4
-    scons mode=small -j4
+    scons mode=release -j4
+
+  The -c (clean) option removes the build output files.
 """
 
 # mode argument must be supplied
 
 mode=ARGUMENTS.get('mode')
 
-if not (mode in ['debug', 'fast', 'small']):
+if not (mode in ['debug', 'release']):
     usage()
     Exit(1)
 
@@ -46,7 +46,9 @@ env.VariantDir(outdir,".",duplicate=0)
 
 # verify that stm32plus is installed in the defined location
 
-stm32plus_lib=STM32PLUS_INSTALL_DIR+"/lib/stm32plus-"+STM32PLUS_VERSION+"/libstm32plus-"+mode+"-f051-8000000.a"
+stm32plus_lib_build="small" if mode=="release" else "debug"
+stm32plus_lib=STM32PLUS_INSTALL_DIR+"/lib/stm32plus-"+STM32PLUS_VERSION+"/libstm32plus-"+stm32plus_lib_build+"-f051-8000000.a"
+
 if not os.path.isfile(stm32plus_lib):
     print stm32plus_lib+" does not exist."
     print "Please edit SConstruct and check the STM32PLUS_INSTALL_DIR and STM32PLUS_VERSION variables."
@@ -61,7 +63,7 @@ env.Replace(AS="arm-none-eabi-as")
 # create the C and C++ flags that are needed. We can't use the extra or pedantic errors on the ST library code.
 
 env.Replace(CCFLAGS=["-Wall","-Werror","-ffunction-sections","-fdata-sections","-fno-exceptions","-mthumb","-gdwarf-2","-pipe","-mcpu=cortex-m0","-DSTM32PLUS_F0_51","-DHSE_VALUE=8000000"])
-env.Replace(CXXFLAGS=["-Wextra","-pedantic-errors","-fno-rtti","-std=gnu++0x","-fno-threadsafe-statics"])
+env.Replace(CXXFLAGS=["-Wextra","-pedantic-errors","-fno-rtti","-std=gnu++11","-fno-threadsafe-statics"])
 env.Append(ASFLAGS="-mcpu=cortex-m0")
 env.Append(LINKFLAGS=["-Xlinker","--gc-sections","-mthumb","-g3","-gdwarf-2","-mcpu=cortex-m0"])
 env.Append(LINKFLAGS=["-Tsystem/f051/Linker.ld","-Wl,-wrap,__aeabi_unwind_cpp_pr0","-Wl,-wrap,__aeabi_unwind_cpp_pr1","-Wl,-wrap,__aeabi_unwind_cpp_pr2"])
@@ -91,35 +93,41 @@ else:
 
 # set the library path
 
-env.Append(LIBS="stm32plus-"+mode+"-f051-8000000.a")
+env.Append(LIBS="stm32plus-"+stm32plus_lib_build+"-f051-8000000.a")
+
+# add on the mode=specific optimisation definitions
+
+if mode=="debug":
+  env.Append(CCFLAGS=["-Og","-g3","-DDEBUG"])
+  specials_env=env.Clone();
+
+elif mode=="release":
+  specials_env=env.Clone();
+  env.Append(CCFLAGS=["-Os"])
+  specials_env.Append(CCFLAGS=["-O3"])
 
 # collect the source files
 
-matches=[]
-matches.append(Glob(outdir+"/*.cpp"))
+normals=env.Object([f for f in Glob(outdir+"/*.cpp")
+  if "CommandExecutor.cpp" not in f.path])
+
+# CommandExecutor is compiled with -O3 in release mode
+
+specials=specials_env.Object(Glob(outdir+"/CommandExecutor.cpp"))
 
 # append the system startup files
 
-matches.append("system/LibraryHacks.cpp")
-matches.append("system/f051/Startup.asm")
-matches.append("system/f051/System.c")
+normals.append("system/LibraryHacks.cpp")
+normals.append("system/f051/Startup.asm")
+normals.append("system/f051/System.c")
 
 # here's where the linker script is located
 
 linkerscript="system/f051/Linker.ld"
 
-# add on the mode=specific optimisation definitions
-
-if mode=="debug":
-    env.Append(CCFLAGS=["-O0","-g3","-DDEBUG"])
-elif mode=="fast":
-    env.Append(CCFLAGS=["-O3"])
-elif mode=="small":
-    env.Append(CCFLAGS=["-Os"])
-
 # trigger a build with the correct output name
 
-elf=env.Program(outdir+"/awcopper.elf",matches)
+elf=env.Program(outdir+"/awcopper.elf",[normals,specials])
 hex=env.Command(outdir+"/awcopper.hex",elf,"arm-none-eabi-objcopy -O ihex "+outdir+"/awcopper.elf "+outdir+"/awcopper.hex")
 bin=env.Command(outdir+"/awcopper.bin",elf,"arm-none-eabi-objcopy -O binary "+outdir+"/awcopper.elf "+outdir+"/awcopper.bin")
 lst=env.Command(outdir+"/awcopper.lst",elf,"arm-none-eabi-objdump -h -S "+outdir+"/awcopper.elf > "+outdir+"/awcopper.lst")

@@ -197,6 +197,14 @@ void CommandExecutor::processNextCommand() {
       cmd::TpinGpioControl::execute(_tpinManager,_commandBuffer);
       break;
 
+    case cmd::SLEEP:
+      cmd::LowPower::execute(_panel,cmd::LowPower::SLEEP);
+      break;
+
+    case cmd::WAKE:
+      cmd::LowPower::execute(_panel,cmd::LowPower::WAKE);
+      break;
+
     default:
       // invalid command. not good.
       break;

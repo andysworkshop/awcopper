@@ -152,6 +152,26 @@ namespace awc {
   uint16_t erase4KSector(uint32_t address);
   uint16_t erase8KSector(uint32_t address);
   uint16_t erase64KSector(uint32_t address);
-
   uint16_t program(uint32_t address);
+
+  uint16_t jpeg(const Rectangle& rc,uint32_t count);
 }
+
+
+#define GET_FAR_ADDRESS(var)                  \
+({                                            \
+  uint32_t tmp;                               \
+                                              \
+  __asm__ __volatile__(                       \
+                                              \
+      "ldi  %A0, lo8(%1)"           "\n\t"    \
+      "ldi  %B0, hi8(%1)"           "\n\t"    \
+      "ldi  %C0, hh8(%1)"           "\n\t"    \
+      "clr  %D0"                    "\n\t"    \
+    :                                         \
+      "=d" (tmp)                              \
+    :                                         \
+      "p"  (&(var))                           \
+  );                                          \
+  tmp;                                        \
+})

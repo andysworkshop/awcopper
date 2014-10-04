@@ -1,3 +1,9 @@
+/*
+ * Andy's Workshop Arduino Graphics Coprocessor.
+ * Copyright (c) 2014 Andy Brown. All rights reserved.
+ * Please see website (http://www.andybrown.me.uk) for full details.
+ */
+ 
 #include <Wire.h>
 #include <awcopper.h>
 
@@ -12,9 +18,15 @@ using awc::Rectangle;
 using awc::Point;
 using awc::Size;
 
+// references to the JPEG data
+
+extern const uint32_t JpegData,JpegDataSize;
+
 
 void setup() {
 
+    Serial.begin(9600);
+    
   // initialise the I2C library for 400kHz
   
   Wire.begin();
@@ -37,22 +49,189 @@ void setup() {
 }
 
 void loop() {
+  jpegDemo();
+  ellipseDemo();
+  textDemo();
+  fontDemo();
+  polylineDemo();
   clearDemo();
-//  plotDemo();
- // polylineDemo();
-//  basicColoursDemo();
-//  lineDemo();
-//  gradientDemo();
-//  rectDemo();
-//  ellipseDemo();
+  plotDemo();
+  basicColoursDemo();
+  lineDemo();
+  gradientDemo();
+  rectDemo();
+  sleepDemo();
+}
+
+
+void jpegDemo() {
+
+  uint16_t size,batchSize,i;
+  const uint8_t *data;
+  uint8_t buffer[128],*bufptr;      // multiple of 32 makes the most of the Wire buffer
+  
+  prompt("JPEG demo uploaded from the Arduino");
+  
+  // the background should be white
+  
+  copro << awc::background(awc::WHITE)
+        << awc::clear();
+        
+  // prepare for the upload
+
+  data=(const uint8_t *)GET_FAR_ADDRESS(JpegData);
+  size=GET_FAR_ADDRESS(JpegDataSize);
+  
+  // draw the JPEG centered on the screen
+  
+  copro << awc::jpeg(Rectangle(70,26,500,308),size);
+
+  // send the expected data in batches
+  
+  while(size) {
+    
+    batchSize=size<sizeof(buffer) ? size : sizeof(buffer);
+    bufptr=buffer;
+    
+    for(i=batchSize;i;i--)
+      *bufptr++=pgm_read_byte_near(data++);
+    
+    copro << awc::Bytes(buffer,batchSize);
+    size-=batchSize;
+  }
+  
+  // enjoy for 8 seconds :)
+  
+  delay(8000);
+}
+
+
+void sleepDemo() {
+
+  prompt("Sleep demo");
+
+  // show the sleeping message
+
+  copro << awc::foreground(awc::WHITE)
+        << awc::font(awc::DOS)
+        << awc::text(Point::Origin,"Sleeping now...");
+        
+  delay(3000);
+  
+  // go to sleep for 3 seconds
+  
+  copro << awc::sleep();
+  delay(3000);
+  
+  // wake up
+  
+  copro << awc::wake()
+        << awc::clear()
+        << awc::text(Point::Origin,"Woken up again...");
+        
+  delay(3000);
+}
+
+
+void textDemo() {
+     
+  Size size;
+  uint32_t start;
+  Point p;
+  
+  prompt("Text demo");
+
+  copro << font(awc::PROGGY);
+
+  for(start=millis();millis()-start<5000;) {
+  
+    p.X=random(Copper::WIDTH-200);
+    p.Y=random(Copper::HEIGHT-16);
+    
+    copro << awc::foreground(random(awc::WHITE))
+          << awc::text(p,"The quick brown fox jumped over the lazy dogs",awc::SOLID);
+  }
+}
+
+
+void fontDemo() {
+
+  static struct {
+    awc::FontId id;
+    const char *name;
+  } const fdefs[]= {
+    { awc::APPLE,      "APPLE" },
+    { awc::ATARI,      "ATARI" },
+    { awc::DOS,        "DOS" },
+    { awc::KYROU_BOLD, "KYROU_BOLD" },
+    { awc::KYROU,      "KYROU" },
+    { awc::NINTENDO,   "NINTENDO" },
+    { awc::PIXELADE,   "PIXELADE" },
+    { awc::PROGGY,     "PROGGY" },
+    { awc::GOLDFISH,   "GOLDFISH" } 
+  };
+  
+  prompt("font demo");
+  char buffer[100];
+  uint16_t y,i;
+  
+  copro << awc::foreground(awc::WHITE);
+
+  y=50;
+  for(i=0;i<sizeof(fdefs)/sizeof(fdefs[0]);i++) {
+  
+    strcpy(buffer,fdefs[i].name);
+    strcat(buffer,": the quick brown fox jumped over the lazy dogs");
+  
+    copro << awc::font(fdefs[i].id)
+          << awc::text(Point(100,y),buffer);
+        
+    y+=16;
+  }
+  delay(10000);
 }
 
 
 /*
- * Show a triangle
+ * Show a polyline demo
  */
  
 void polylineDemo() {
+  
+  Point p[5];
+  uint32_t cr,start;
+  int16_t disp;
+  uint16_t count;
+  
+  prompt("polyline demo");
+  
+  p[0].X=0;
+  p[0].Y=p[2].Y=p[4].Y=0;
+  p[1].X=Copper::WIDTH/4;
+  p[1].Y=p[3].Y=Copper::HEIGHT-1;
+  p[2].X=Copper::WIDTH/2;
+  p[3].X=Copper::WIDTH/4*3;
+  p[4].X=Copper::WIDTH-1;
+  
+  cr=awc::RED;
+  count=0;
+  disp=2;
+  
+  for(start=millis();millis()-start<5000;) {
+    
+    copro << awc::foreground(cr)
+          << awc::polyline(p,5);
+          
+    p[1].X+=disp;
+    p[3].X-=disp;
+    
+    if(count++==Copper::WIDTH/2) {
+      count=0;
+      disp=-disp;
+    }
+    
+    cr+=4;
+  }
 }
 
 

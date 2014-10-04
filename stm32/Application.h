@@ -49,6 +49,7 @@ using namespace stm32plus::display;
 #include "commands/SetFont.h"
 #include "commands/TextOps.h"
 #include "commands/Clear.h"
+#include "commands/LowPower.h"
 #include "commands/tpin/TpinGpioMode.h"
 #include "commands/tpin/TpinGpioControl.h"
 #include "commands/tpin/TpinTimerFrequency.h"

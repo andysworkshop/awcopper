@@ -37,18 +37,19 @@ namespace cmd {
   inline void Polyline::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
-    uint8_t segments;
+    uint8_t points;
     Point p[2];
 
-    // read the number of segments
+    // read the number of points
 
     while(commandBuffer.availableToRead()==0);
-    if((segments=commandBuffer.read())<2)
+    if((points=commandBuffer.read())<2)
       return;
 
     // read first point
 
     readPoint(p[1],commandBuffer);
+    points--;
 
     do {
 
@@ -56,12 +57,11 @@ namespace cmd {
 
       p[0]=p[1];
       readPoint(p[1],commandBuffer);
-      segments--;
 
       // draw the line and loop while there's more to do
 
       gl.drawLine(p[0],p[1]);
-    } while(segments);
+    } while(--points);
   }
 
 

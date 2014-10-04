@@ -492,4 +492,33 @@ namespace awc {
 
     return 4;
   }
+
+
+  /*
+   * Begin transmitting a JPEG from the Arduino to the STM32
+   */
+
+  uint16_t jpeg(const Rectangle& rc,uint32_t count) {
+
+    uint8_t *ptr=CoProcessor::buffer;
+
+    // buffer the command and the rectangle
+
+    *ptr++=cmd::WRITE_JPEG;
+    ptr=addRectToBuffer(ptr,rc);
+
+    // 24 bit size
+
+    *ptr++=count;
+    *ptr++=count >> 8;
+    *ptr++=count >> 16;
+
+    // await the data
+
+    CoProcessor::bytesRemaining=count;
+
+    // 12 bytes written by this method
+
+    return 12;
+  }
 }

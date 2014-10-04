@@ -48,12 +48,12 @@ namespace awc {
 
 
   /*
-   * Possible I2C bus speeds
+   * Gradient fill directions (the numbers are important)
    */
-   
-  enum BusSpeed {
-    KHZ_100,
-    KHZ_400
+
+  enum Direction {
+    HORIZONTAL = 0,
+    VERTICAL = 1
   };
 
 
@@ -77,7 +77,7 @@ namespace awc {
       };
 
       /*
-       * Commands get buffered here pending transmission. BUFFER_LENGTH is an extremely 
+       * Commands get buffered here pending transmission. BUFFER_LENGTH is an exceedingly 
        * poorly named macro that you'll find in <Wire.h>.
        */
 
@@ -90,12 +90,31 @@ namespace awc {
       static uint32_t bytesRemaining;
 
     public:
-      void begin(BusSpeed speed);
       void reset();
 
       CoProcessor& operator<<(uint16_t count);        // command buffer streaming
       CoProcessor& operator<<(const Bytes& bytes);    // variable bytes data streaming
   };
+
+
+  /*
+   * Traits classes for portrait and landscape
+   */
+
+  struct LandscapeCoProcessor : CoProcessor {
+    enum {
+      WIDTH = 640,
+      HEIGHT = 360
+    };
+  };
+
+  struct PortraitCoProcessor : CoProcessor {
+    enum {
+      WIDTH = 360,
+      HEIGHT = 640
+    };
+  };
+
 
   /*
    * Command declarations
@@ -112,9 +131,11 @@ namespace awc {
   uint16_t background(uint32_t colorref);
   uint16_t foreground(uint32_t colorref);
 
+  uint16_t clear();
   uint16_t clearRectangle(const Rectangle& rc);
   uint16_t fillRectangle(const Rectangle& rc);
   uint16_t rectangle(const Rectangle& rc);
+  uint16_t gradientFillRectangle(const Rectangle& rc,Direction dir,uint32_t firstColour,uint32_t lastColour);
 
   uint16_t line(const Point& p1,const Point& p2);
   uint16_t polyline(const Point *p,uint8_t count);

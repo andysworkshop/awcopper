@@ -21,21 +21,6 @@ namespace awc {
 
 
   /*
-   * Initialise the wire library
-   */
-
-  void CoProcessor::begin(BusSpeed speed) {
-
-    ::Wire.begin();
-    
-    if(speed==KHZ_400)
-      TWBR=12;
-    
-    reset();
-  }
-
-
-  /*
    * Write out the number of bytes already prepared in the static buffer
    */
 
@@ -134,26 +119,33 @@ namespace awc {
 
   namespace {
   
-    uint16_t colourOperation(uint8_t operation,uint32_t colorref) {
+    uint8_t *addColourToBuffer(uint8_t *ptr,uint32_t cr) {
+
+      *ptr++=cr >> 16;    // RR
+      *ptr++=cr >> 8;     // GG
+      *ptr++=cr;          // BB
+
+      return ptr;
+    }
+
+
+    uint16_t colourOp(uint8_t operation,uint32_t cr) {
 
       uint8_t *ptr=CoProcessor::buffer;
 
       *ptr++=operation;
-
-      *ptr++=colorref >> 16;    // RR
-      *ptr++=colorref >> 8;     // GG
-      *ptr++=colorref;          // BB
+      addColourToBuffer(ptr,cr);
 
       return 4;
     }
   }
 
   uint16_t background(uint32_t colorref) {
-    return colourOperation(awc::cmd::BACKGROUND_COLOUR,colorref);
+    return colourOp(awc::cmd::BACKGROUND_COLOUR,colorref);
   }
 
   uint16_t foreground(uint32_t colorref) {
-    return colourOperation(awc::cmd::FOREGROUND_COLOUR,colorref);
+    return colourOp(awc::cmd::FOREGROUND_COLOUR,colorref);
   }
 
 
@@ -163,11 +155,7 @@ namespace awc {
 
   namespace {
 
-    uint16_t rectangleOp(uint8_t operation,const Rectangle& rc) {
-
-      uint8_t *ptr=CoProcessor::buffer;
-
-      *ptr++=operation;
+    uint8_t *addRectToBuffer(uint8_t *ptr,const Rectangle& rc) {
 
       *ptr++=rc.X;
       *ptr++=rc.X >> 8;
@@ -180,6 +168,17 @@ namespace awc {
 
       *ptr++=rc.Height;
       *ptr++=rc.Height >> 8;
+
+      return ptr;
+    }
+
+
+    uint16_t rectangleOp(uint8_t operation,const Rectangle& rc) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=operation;
+      addRectToBuffer(ptr,rc);
 
       return 9;
     }
@@ -195,6 +194,35 @@ namespace awc {
 
   uint16_t rectangle(const Rectangle& rc) {
     return rectangleOp(awc::cmd::RECTANGLE,rc);
+  }
+
+
+  /*
+   * Clear the whole screen to the current background colour
+   */
+
+  uint16_t clear() {
+    *CoProcessor::buffer=cmd::CLEAR_SCREEN;
+    return 1;
+  }
+
+
+  /*
+   * Fill a rectangle with a gradient
+   */
+
+  uint16_t gradientFillRectangle(const Rectangle& rc,Direction dir,uint32_t firstColour,uint32_t lastColour) {
+
+    uint8_t *ptr=CoProcessor::buffer;
+
+    *ptr++=awc::cmd::GRADIENT_FILL_RECTANGLE;
+
+    ptr=addRectToBuffer(ptr,rc);              // 8 bytes
+    *ptr++=dir;
+    ptr=addColourToBuffer(ptr,firstColour);   // 3 bytes
+    addColourToBuffer(ptr,lastColour);        // 3 bytes
+
+    return 16;
   }
 
 
@@ -224,23 +252,12 @@ namespace awc {
 
   namespace {
 
-    uint16_t ellipseOp(uint8_t operation,const Point& p,const Size& size) {
+    uint16_t ellipseOp(uint8_t operation,const Point& center,const Size& size) {
 
       uint8_t *ptr=CoProcessor::buffer;
 
       *ptr++=operation;
-
-      *ptr++=p.X;
-      *ptr++=p.X >> 8;
-
-      *ptr++=p.Y;
-      *ptr++=p.Y >> 8;
-
-      *ptr++=size.Width;
-      *ptr++=size.Width >> 8;
-
-      *ptr++=size.Height;
-      *ptr++=size.Height >> 8;
+      addRectToBuffer(ptr,Rectangle(center,size));
 
       return 9;
     }

@@ -77,7 +77,7 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
       // is the buffer full?
 
       if(full) {
-        _i2c->disableInterrupts(I2C_IT_RXI);
+        Nvic::disableAllInterrupts();
         _suspended=true;                              // SCL is stretched until we read RXDR
       }
       break;
@@ -103,6 +103,6 @@ void CommandReader::checkPending() {
 
   if(_suspended && _commandBuffer.availableToWrite()>0) {
     _suspended=false;
-    _i2c->enableInterrupts(I2C_IT_RXI);
+    Nvic::enableAllInterrupts();
   }
 }

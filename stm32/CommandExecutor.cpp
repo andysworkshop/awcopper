@@ -81,8 +81,16 @@ void CommandExecutor::processNextCommand() {
       cmd::RectangleOps::execute(_panel,_commandBuffer,cmd::RectangleOps::FILLED);
       break;
 
+    case cmd::GRADIENT_FILL_RECTANGLE:
+      cmd::GradientRect::execute(_panel,_commandBuffer);
+      break;
+
     case cmd::CLEAR_RECTANGLE:
       cmd::RectangleOps::execute(_panel,_commandBuffer,cmd::RectangleOps::CLEARED);
+      break;
+
+    case cmd::CLEAR_SCREEN:
+      cmd::Clear::execute(_panel);
       break;
 
     case cmd::POLYLINE:

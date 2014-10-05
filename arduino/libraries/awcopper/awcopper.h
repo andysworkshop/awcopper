@@ -155,4 +155,6 @@ namespace awc {
   uint16_t program(uint32_t address);
 
   uint16_t jpeg(const Rectangle& rc,uint32_t count);
+  uint16_t bitmap(const Rectangle& rc,uint32_t count);
+  uint16_t lzgBitmap(const Rectangle& rc,uint32_t count);
 }

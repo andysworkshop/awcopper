@@ -495,30 +495,60 @@ namespace awc {
 
 
   /*
+   * General bitmap operations
+   */
+
+  namespace {
+
+    uint16_t bitmapOp(uint8_t operation,const Rectangle& rc,uint32_t count) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=operation;
+      ptr=addRectToBuffer(ptr,rc);
+
+      // 24 bit size
+
+      *ptr++=count;
+      *ptr++=count >> 8;
+      *ptr++=count >> 16;
+
+      // await the data
+
+      CoProcessor::bytesRemaining=count;
+
+      // 12 bytes written by this method
+
+      return 12;
+    }
+  }
+
+
+  /*
    * Begin transmitting a JPEG from the Arduino to the STM32
    */
 
   uint16_t jpeg(const Rectangle& rc,uint32_t count) {
+    return bitmapOp(cmd::WRITE_JPEG,rc,count);
+  }
 
-    uint8_t *ptr=CoProcessor::buffer;
 
-    // buffer the command and the rectangle
+  /*
+   * Begin transmitting an uncompressed bitmap from the Arduino to the STM32. The limited memory
+   * of the Arduino makes this rather an unappealing option.
+   */
 
-    *ptr++=cmd::WRITE_JPEG;
-    ptr=addRectToBuffer(ptr,rc);
+  uint16_t bitmap(const Rectangle& rc,uint32_t count) {
+    return bitmapOp(cmd::WRITE_BITMAP,rc,count);
+  }
 
-    // 24 bit size
 
-    *ptr++=count;
-    *ptr++=count >> 8;
-    *ptr++=count >> 16;
+  /*
+   * Begin transmitting an LZG compressed bitmap from the Arduino to the STM32. LZG
+   * compression does very well on the same type of grapics where PNG does well.
+   */
 
-    // await the data
-
-    CoProcessor::bytesRemaining=count;
-
-    // 12 bytes written by this method
-
-    return 12;
+  uint16_t lzgBitmap(const Rectangle& rc,uint32_t count) {
+    return bitmapOp(cmd::WRITE_LZG_BITMAP,rc,count);
   }
 }

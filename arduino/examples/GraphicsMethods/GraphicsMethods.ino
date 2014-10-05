@@ -74,10 +74,10 @@ void jpegDemo() {
   
   copro << awc::background(awc::WHITE)                    // white background
         << awc::clear()                                   // clear down  
-        << awc::font(awc::NINTENDO)                       // select a font
+        << awc::font(awc::KYROU_BOLD)                     // select a font
         << awc::foreground(awc::BLACK)                    // set a font colour
-        << awc::text(Point::Origin,"Got one of these?")   // draw a title
-        << awc::text(Point(0,344),"Get Andy's CoProcessor shield for cheap high performance graphics");
+        << awc::text(Point(10,10),"Got one of these?")    // draw a title
+        << awc::text(Point(10,340),"Get Andy's CoProcessor shield for cheap high performance graphics");
         
   // prepare for the upload
 

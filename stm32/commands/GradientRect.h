@@ -23,7 +23,7 @@ namespace cmd {
    */
 
   struct GradientRect {
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -31,7 +31,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void GradientRect::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void GradientRect::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t rparams[4];
@@ -41,18 +41,18 @@ namespace cmd {
     // read the rect
 
     while(commandBuffer.availableToRead()<8);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(rparams),8);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(rparams),8);
     Rectangle rc(rparams[0],rparams[1],rparams[2],rparams[3]);
 
     // read the direction
 
     while(commandBuffer.availableToRead()<1);
-    dir=commandBuffer.read();
+    dir=commandBuffer.managedRead();
 
     // read the colours
 
     while(commandBuffer.availableToRead()<6);
-    commandBuffer.read(cparams,6);
+    commandBuffer.managedRead(cparams,6);
 
     first=((uint32_t)cparams[0]) << 16 |
           ((uint32_t)cparams[1]) << 8 |

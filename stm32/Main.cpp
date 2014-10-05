@@ -28,7 +28,7 @@ int main() {
   // declare the 1Kb circular buffer that will be used to buffer commands
   // received from the arduino before they're executed by the STM32
 
-  circular_buffer<uint8_t> commandBuffer(1024);
+  ManagedCircularBuffer commandBuffer(1024);
 
   // declare the status indicators
 

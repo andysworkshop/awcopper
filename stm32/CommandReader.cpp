@@ -11,10 +11,9 @@
  * Constructor
  */
 
-CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators)
+CommandReader::CommandReader(ManagedCircularBuffer& commandBuffer,StatusIndicators& indicators)
   : _commandBuffer(commandBuffer),
     _indicators(indicators),
-    _suspended(false),
     _addressReceived(false) {
 
   MyI2C::Parameters params;
@@ -29,7 +28,8 @@ CommandReader::CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndic
 
   // subscribe to interrupts
 
-  _i2c->I2CInterruptEventSender.insertSubscriber(I2CInterruptEventSourceSlot::bind(this,&CommandReader::onInterrupt));
+  _i2c->I2CInterruptEventSender.insertSubscriber(
+      I2CInterruptEventSourceSlot::bind(this,&CommandReader::onInterrupt));
 }
 
 
@@ -74,12 +74,11 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
       full=_commandBuffer.availableToWrite()==0;
       _indicators.setFull(full);                      // set/reset the full LED
 
-      // is the buffer full?
+      // is the buffer full? Suspend incoming if it is.
 
-      if(full) {
-        Nvic::disableAllInterrupts();
-        _suspended=true;                              // SCL is stretched until we read RXDR
-      }
+      if(full)
+        _commandBuffer.suspend();
+
       break;
 
     case I2CEventType::EVENT_STOP_BIT_RECEIVED:
@@ -91,18 +90,5 @@ void CommandReader::onInterrupt(I2CEventType eventType) {
 
     default:
       break;
-  }
-}
-
-
-/*
- * If we're suspended then data is pending and could be cleared
- */
-
-void CommandReader::checkPending() {
-
-  if(_suspended && _commandBuffer.availableToWrite()>0) {
-    _suspended=false;
-    Nvic::enableAllInterrupts();
   }
 }

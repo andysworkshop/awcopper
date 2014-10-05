@@ -25,8 +25,6 @@ extern const uint32_t JpegData,JpegDataSize;
 
 void setup() {
 
-    Serial.begin(9600);
-    
   // initialise the I2C library for 400kHz
   
   Wire.begin();
@@ -74,13 +72,17 @@ void jpegDemo() {
   
   // the background should be white
   
-  copro << awc::background(awc::WHITE)
-        << awc::clear();
+  copro << awc::background(awc::WHITE)                    // white background
+        << awc::clear()                                   // clear down  
+        << awc::font(awc::NINTENDO)                       // select a font
+        << awc::foreground(awc::BLACK)                    // set a font colour
+        << awc::text(Point::Origin,"Got one of these?")   // draw a title
+        << awc::text(Point(0,344),"Get Andy's CoProcessor shield for cheap high performance graphics");
         
   // prepare for the upload
 
-  data=(const uint8_t *)GET_FAR_ADDRESS(JpegData);
-  size=GET_FAR_ADDRESS(JpegDataSize);
+  data=reinterpret_cast<const uint8_t *>(&JpegData);
+  size=reinterpret_cast<uint16_t>(&JpegDataSize);
   
   // draw the JPEG centered on the screen
   
@@ -100,9 +102,9 @@ void jpegDemo() {
     size-=batchSize;
   }
   
-  // enjoy for 8 seconds :)
+  // enjoy for 10 seconds :)
   
-  delay(8000);
+  delay(10000);
 }
 
 

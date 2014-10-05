@@ -24,7 +24,7 @@ namespace cmd {
       PARAMETER_COUNT = 3,
     };
 
-    static void execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -32,7 +32,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void TpinGpioMode::execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer) {
+  inline void TpinGpioMode::execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer) {
 
     uint8_t params[3];
 

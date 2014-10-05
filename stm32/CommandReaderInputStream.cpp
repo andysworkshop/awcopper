@@ -25,7 +25,7 @@ int16_t CommandReaderInputStream::read() {
   // decrease remaining and return data
 
   _remaining--;
-  return _cbuffer.read();
+  return _cbuffer.managedRead();
 }
 
 
@@ -53,7 +53,7 @@ bool CommandReaderInputStream::read(void *buffer,uint32_t size,uint32_t& actuall
   actuallyRead=available>size ? size : available;
 
   _remaining-=actuallyRead;
-  _cbuffer.read(reinterpret_cast<uint8_t *>(buffer),actuallyRead);
+  _cbuffer.managedRead(reinterpret_cast<uint8_t *>(buffer),actuallyRead);
 
   return true;
 }

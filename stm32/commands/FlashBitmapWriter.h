@@ -30,7 +30,7 @@ namespace cmd {
       JPEG
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,Storage type);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer,Storage type);
   };
 
 
@@ -38,7 +38,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void FlashBitmapWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,Storage type) {
+  inline void FlashBitmapWriter::execute(Panel& panel,ManagedCircularBuffer& commandBuffer,Storage type) {
 
     int16_t params[4];
     uint32_t dataSize,flashAddress;
@@ -47,20 +47,20 @@ namespace cmd {
     // get the rectangle parameters
 
     while(commandBuffer.availableToRead()<8);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),8);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),8);
     Rectangle rc(params[0],params[1],params[2],params[3]);
 
     // get the data size
 
     while(commandBuffer.availableToRead()<3);
     dataSize=0;
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&dataSize),3);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&dataSize),3);
 
     // get the flash address
 
     while(commandBuffer.availableToRead()<3);
     flashAddress=0;
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&flashAddress),3);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&flashAddress),3);
 
     // set up the drawing rectangle and get ready for receiving data
 

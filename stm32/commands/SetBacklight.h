@@ -21,7 +21,7 @@ namespace cmd {
       PARAMETER_COUNT = 1
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -29,14 +29,14 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void SetBacklight::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void SetBacklight::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     uint8_t percentage;
 
     // wait for, and then read the parameter
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    percentage=commandBuffer.read();
+    percentage=commandBuffer.managedRead();
 
     // set the percentage
 

@@ -26,7 +26,7 @@ namespace cmd {
       PARAMETER_COUNT=11
     };
 
-    static void execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -34,7 +34,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void TpinTimerInitCompare::execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer) {
+  inline void TpinTimerInitCompare::execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer) {
 
     uint8_t pinNumber;
     uint32_t compareValue;
@@ -44,9 +44,9 @@ namespace cmd {
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
-    pinNumber=commandBuffer.read();
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&compareValue),4);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),6);
+    pinNumber=commandBuffer.managedRead();
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&compareValue),4);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),6);
 
     // initialise the channel
 

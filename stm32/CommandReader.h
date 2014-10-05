@@ -31,21 +31,19 @@ class CommandReader {
 
     typedef I2C2_Remap1<I2C2InterruptFeature> MyI2C;
 
-    circular_buffer<uint8_t>& _commandBuffer;
+    ManagedCircularBuffer& _commandBuffer;
     StatusIndicators _indicators;
     scoped_ptr<MyI2C> _i2c;
-    volatile bool _suspended;
     bool _addressReceived;
 
   protected:
     void onInterrupt(I2CEventType eventType);
 
   public:
-    CommandReader(circular_buffer<uint8_t>& commandBuffer,StatusIndicators& indicators);
+    CommandReader(ManagedCircularBuffer& commandBuffer,StatusIndicators& indicators);
     void start();
 
-    void checkPending();
-    circular_buffer<uint8_t>& getCommandBuffer() const;
+    ManagedCircularBuffer& getCommandBuffer() const;
 };
 
 
@@ -53,7 +51,7 @@ class CommandReader {
  * Get the command buffer reference
  */
 
-inline circular_buffer<uint8_t>& CommandReader::getCommandBuffer() const {
+inline ManagedCircularBuffer& CommandReader::getCommandBuffer() const {
   return _commandBuffer;
 }
 

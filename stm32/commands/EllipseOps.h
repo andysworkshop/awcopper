@@ -28,7 +28,7 @@ namespace cmd {
       OUTLINED
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer,int operType);
   };
 
 
@@ -36,7 +36,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void EllipseOps::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType) {
+  inline void EllipseOps::execute(Panel& panel,ManagedCircularBuffer& commandBuffer,int operType) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t parameters[4];
@@ -44,7 +44,7 @@ namespace cmd {
     // wait for, and then read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     // draw the ellipse
 

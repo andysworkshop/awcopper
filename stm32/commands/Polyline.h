@@ -23,10 +23,10 @@ namespace cmd {
   class Polyline {
 
     protected:
-      static void readPoint(Point& p,circular_buffer<uint8_t>& commandBuffer);
+      static void readPoint(Point& p,ManagedCircularBuffer& commandBuffer);
 
     public:
-      static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+      static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -34,7 +34,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Polyline::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Polyline::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     uint8_t points;
@@ -43,7 +43,7 @@ namespace cmd {
     // read the number of points
 
     while(commandBuffer.availableToRead()==0);
-    if((points=commandBuffer.read())<2)
+    if((points=commandBuffer.managedRead())<2)
       return;
 
     // read first point
@@ -69,11 +69,11 @@ namespace cmd {
    * Read a single point (X,Y) from the buffer
    */
 
-  inline void Polyline::readPoint(Point& p,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Polyline::readPoint(Point& p,ManagedCircularBuffer& commandBuffer) {
 
     while(commandBuffer.availableToRead()<sizeof(p.X)+sizeof(p.Y));
 
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&p.X),sizeof(p.X));
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&p.Y),sizeof(p.Y));
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&p.X),sizeof(p.X));
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&p.Y),sizeof(p.Y));
   }
 }

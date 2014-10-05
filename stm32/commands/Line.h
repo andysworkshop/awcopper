@@ -25,7 +25,7 @@ namespace cmd {
       PARAMETER_COUNT = 8
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -33,7 +33,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Line::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Line::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t params[4];
@@ -41,7 +41,7 @@ namespace cmd {
     // read the co-ordinates and draw the line
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
 
     gl.drawLine(Point(params[0],params[1]),Point(params[2],params[3]));
   }

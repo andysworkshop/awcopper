@@ -26,7 +26,7 @@ namespace cmd {
       PARAMETER_COUNT = 8
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -34,7 +34,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void SetWindow::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void SetWindow::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t parameters[4];
@@ -42,7 +42,7 @@ namespace cmd {
     // wait for, and then read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     // set the display window
 

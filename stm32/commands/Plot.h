@@ -23,7 +23,7 @@ namespace cmd {
       PARAMETER_COUNT = 4
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -31,7 +31,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Plot::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Plot::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t params[2];
@@ -39,7 +39,7 @@ namespace cmd {
     // read the co-ordinates and plot the point
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
     gl.plotPoint(Point(params[0],params[1]));
   }
 }

@@ -27,7 +27,7 @@ namespace cmd {
       OUTLINED
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer,int operType);
   };
 
 
@@ -35,7 +35,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void TextOps::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,int operType) {
+  inline void TextOps::execute(Panel& panel,ManagedCircularBuffer& commandBuffer,int operType) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t parameters[2];
@@ -43,7 +43,7 @@ namespace cmd {
     // wait for, and then read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     Point pos(parameters[0],parameters[1]);
     const FontChar *fc;
@@ -70,7 +70,7 @@ namespace cmd {
 
       // break out when zero is read
 
-      if((c=commandBuffer.read())==0)
+      if((c=commandBuffer.managedRead())==0)
         break;
 
       font.getCharacter(c,fc);

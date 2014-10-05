@@ -23,7 +23,7 @@ namespace cmd {
       PARAMETER_COUNT = 4
     };
 
-    static void execute(circular_buffer<uint8_t>& commandBuffer);
+    static void execute(ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -31,7 +31,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void FlashEraseSector::execute(circular_buffer<uint8_t>& commandBuffer) {
+  inline void FlashEraseSector::execute(ManagedCircularBuffer& commandBuffer) {
 
     uint8_t sectorSize;
     uint32_t address;
@@ -41,9 +41,9 @@ namespace cmd {
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
-    sectorSize=commandBuffer.read();
+    sectorSize=commandBuffer.managedRead();
     address=0;
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&address),3);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&address),3);
 
     // do the erase
 

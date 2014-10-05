@@ -22,7 +22,7 @@ namespace cmd {
       PARAMETER_COUNT = 3
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,bool fg);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer,bool fg);
   };
 
 
@@ -30,7 +30,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Colour::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer,bool fg) {
+  inline void Colour::execute(Panel& panel,ManagedCircularBuffer& commandBuffer,bool fg) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     uint8_t parameters[3];
@@ -38,7 +38,7 @@ namespace cmd {
     // wait for, and then read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     // set the colour
 

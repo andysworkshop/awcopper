@@ -37,7 +37,6 @@ void CommandExecutor::run() {
 
     do {
       processNextCommand();
-      _reader.checkPending();
     } while(_commandBuffer.availableToRead()!=0);
 
     // buffered commands processed, switch off the indicator
@@ -55,7 +54,7 @@ void CommandExecutor::processNextCommand() {
 
   // execute the command
 
-  switch(_commandBuffer.read()) {
+  switch(_commandBuffer.managedRead()) {
 
     case cmd::SET_BACKLIGHT:
       cmd::SetBacklight::execute(_panel,_commandBuffer);

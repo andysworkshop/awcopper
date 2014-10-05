@@ -22,7 +22,7 @@ namespace cmd {
       PARAMETER_COUNT = 1
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -30,7 +30,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void SetFont::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void SetFont::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     uint8_t font;
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
@@ -38,7 +38,7 @@ namespace cmd {
     // read the font index
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    font=commandBuffer.read();
+    font=commandBuffer.managedRead();
 
     // set the selected font
 

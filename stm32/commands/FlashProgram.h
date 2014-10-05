@@ -23,7 +23,7 @@ namespace cmd {
       PARAMETER_COUNT = 259
     };
 
-    static void execute(circular_buffer<uint8_t>& commandBuffer);
+    static void execute(ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -31,7 +31,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void FlashProgram::execute(circular_buffer<uint8_t>& commandBuffer) {
+  inline void FlashProgram::execute(ManagedCircularBuffer& commandBuffer) {
 
     uint32_t address;
     uint8_t page[256];
@@ -44,11 +44,11 @@ namespace cmd {
     // get the address first
 
     address=0;
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&address),3);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&address),3);
 
     // get the page next
 
-    commandBuffer.read(page,256);
+    commandBuffer.managedRead(page,256);
 
     // do the
 

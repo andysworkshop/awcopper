@@ -22,7 +22,7 @@ namespace cmd {
       PARAMETER_COUNT = 13
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -30,7 +30,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void Gamma::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void Gamma::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     uint8_t params[13];
@@ -38,7 +38,7 @@ namespace cmd {
     // read the parameters and set the gamma
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
 
     gl.applyGamma(R61523Gamma(params));
   }

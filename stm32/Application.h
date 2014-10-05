@@ -16,6 +16,7 @@
 using namespace stm32plus;
 using namespace stm32plus::display;
 
+#include "ManagedCircularBuffer.h"
 #include "CommandReaderInputStream.h"
 #include "FontManager.h"
 #include "Panel.h"

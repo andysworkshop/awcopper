@@ -23,7 +23,7 @@ namespace cmd {
       PARAMETER_COUNT=2
     };
 
-    static void execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -31,14 +31,14 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void TpinGpioControl::execute(TPinManager& pinManager,circular_buffer<uint8_t>& commandBuffer) {
+  inline void TpinGpioControl::execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer) {
 
     uint8_t params[2];
 
     // read the parameters
 
     while(commandBuffer.availableToRead()<PARAMETER_COUNT);
-    commandBuffer.read(params,PARAMETER_COUNT);
+    commandBuffer.managedRead(params,PARAMETER_COUNT);
 
     // initialise the channel
 

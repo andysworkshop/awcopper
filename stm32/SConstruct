@@ -104,7 +104,7 @@ if mode=="debug":
 elif mode=="release":
   specials_env=env.Clone();
   env.Append(CCFLAGS=["-Os"])
-  specials_env.Append(CCFLAGS=["-O3"])
+  specials_env.Append(CCFLAGS=["-O2"])
 
 # collect the source files
 

@@ -16,11 +16,11 @@
 class CommandReaderInputStream : public InputStream {
 
   protected:
-    circular_buffer<uint8_t>& _cbuffer;
+    ManagedCircularBuffer& _cbuffer;
     uint32_t _remaining;
 
   public:
-    CommandReaderInputStream(circular_buffer<uint8_t>& cbuffer,uint32_t remaining);
+    CommandReaderInputStream(ManagedCircularBuffer& cbuffer,uint32_t remaining);
 
   public:
 
@@ -42,7 +42,7 @@ class CommandReaderInputStream : public InputStream {
  * Constructor
  */
 
-inline CommandReaderInputStream::CommandReaderInputStream(circular_buffer<uint8_t>& cbuffer,uint32_t remaining)
+inline CommandReaderInputStream::CommandReaderInputStream(ManagedCircularBuffer& cbuffer,uint32_t remaining)
   : _cbuffer(cbuffer),
     _remaining(remaining) {
 }

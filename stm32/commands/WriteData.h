@@ -26,7 +26,7 @@ namespace cmd {
       PIXEL_BUFFER = 500      // max number of pixels to read before transfer to LCD
     };
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -34,7 +34,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void WriteData::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void WriteData::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     uint16_t count,nPixels,buffer[PIXEL_BUFFER];
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
@@ -42,7 +42,7 @@ namespace cmd {
     // wait for the number of pixels to arrive
 
     while(commandBuffer.availableToRead()<2);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&nPixels),2);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&nPixels),2);
 
     while(nPixels) {
 

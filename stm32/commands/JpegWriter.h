@@ -24,7 +24,7 @@ namespace cmd {
 
   struct JpegWriter {
 
-    static void execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer);
+    static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
 
@@ -32,7 +32,7 @@ namespace cmd {
    * Execute the command
    */
 
-  inline void JpegWriter::execute(Panel& panel,circular_buffer<uint8_t>& commandBuffer) {
+  inline void JpegWriter::execute(Panel& panel,ManagedCircularBuffer& commandBuffer) {
 
     Panel::LcdPanel& gl(panel.getGraphicsLibrary());
     int16_t params[4];
@@ -41,14 +41,14 @@ namespace cmd {
     // get the rectangle parameters
 
     while(commandBuffer.availableToRead()<8);
-    commandBuffer.read(reinterpret_cast<uint8_t *>(params),8);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),8);
     Rectangle rc(params[0],params[1],params[2],params[3]);
 
     // get the data size
 
     while(commandBuffer.availableToRead()<3);
     dataSize=0;
-    commandBuffer.read(reinterpret_cast<uint8_t *>(&dataSize),3);
+    commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&dataSize),3);
 
     // declare a command reader input stream to manage reading the data direct
     // from the Arduino to the JPEG decoder

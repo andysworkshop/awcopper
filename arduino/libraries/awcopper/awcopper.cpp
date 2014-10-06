@@ -631,6 +631,7 @@ namespace awc {
 
       return 12;
     } 
+  }
 
 
   /*
@@ -638,7 +639,7 @@ namespace awc {
    */
 
   uint16_t t1Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
-    frequencyOp(1,period,prescaler,clockDivision,counterMode,)
+    return frequencyOp(1,period,prescaler,clockDivision,counterMode);
   }
 
 
@@ -647,6 +648,6 @@ namespace awc {
    */
 
   uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
-    frequencyOp(2,period,prescaler,clockDivision,counterMode,)
+    return frequencyOp(2,period,prescaler,clockDivision,counterMode);
   }
 }

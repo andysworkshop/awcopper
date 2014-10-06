@@ -58,6 +58,30 @@ namespace awc {
 
 
   /*
+   * Timer clockdivision values
+   */
+
+  enum ClockDivision {
+    CKDIV_1 = 0,
+    CKDIV_2 = 0x100,
+    CKDIV_4 = 0x200
+  };
+
+
+  /*
+   * Timer counter modes
+   */
+
+  enum CounterMode {
+    COUNTERMODE_UP = 0,
+    COUNTERMODE_DOWN = 0x10,
+    COUNTERMODE_CENTER1 = 0x20,
+    COUNTERMODE_CENTER2 = 0x40,
+    COUNTERMODE_CENTER3 = 0x0060
+  };
+
+
+  /*
    * Main coprocessor class.
    */
 
@@ -157,4 +181,11 @@ namespace awc {
   uint16_t jpeg(const Rectangle& rc,uint32_t count);
   uint16_t bitmap(const Rectangle& rc,uint32_t count);
   uint16_t lzgBitmap(const Rectangle& rc,uint32_t count);
+
+  uint16_t jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address);
+  uint16_t bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
+  uint16_t lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
+
+  uint16_t t1Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
+  uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
 }

@@ -551,4 +551,102 @@ namespace awc {
   uint16_t lzgBitmap(const Rectangle& rc,uint32_t count) {
     return bitmapOp(cmd::WRITE_LZG_BITMAP,rc,count);
   }
+
+
+  /*
+   * Flash bitmap operations
+   */
+
+  namespace {
+
+    uint16_t flashBitmapOp(uint8_t operation,const Rectangle& rc,uint32_t count,uint32_t address) {
+
+      uint8_t *ptr;
+
+      bitmapOp(operation,rc,count);
+      ptr=CoProcessor::buffer+12;
+
+      *ptr++=address;
+      *ptr++=address >> 8;
+      *ptr++=address >> 16;
+
+      return 15;
+    }
+  }
+
+
+  /*
+   * Write a JPEG stored in the CoProcessor external flash IC to the display
+   */
+
+  uint16_t jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address) {
+    return flashBitmapOp(cmd::WRITE_FLASH_JPEG,rc,count,address);
+  }
+
+
+  /*
+   * Write an uncompressed bitmap stored in the CoProcessor external flash IC to the display
+   */
+
+  uint16_t bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address) {
+    return flashBitmapOp(cmd::WRITE_FLASH_BITMAP,rc,count,address);
+  }
+
+
+  /*
+   * Write a compressed bitmap stored in the CoProcessor external flash IC to the display
+   */
+
+  uint16_t lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address) {
+    return flashBitmapOp(cmd::WRITE_FLASH_LZG_BITMAP,rc,count,address);
+  }
+
+
+  /*
+   * Timer helpers
+   */
+
+  namespace {
+
+    uint16_t frequencyOp(uint8_t timNumber,uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_TIMER_SET_FREQUENCY;
+      *ptr++=timNumber;
+
+      *ptr++=period;
+      *ptr++=period >> 8;
+      *ptr++=period >> 16;
+      *ptr++=period >> 24;
+
+      *ptr++=prescaler;
+      *ptr++=prescaler >> 8;
+
+      *ptr++=clockDivision;
+      *ptr++=clockDivision >> 8;
+
+      *ptr++=counterMode;
+      *ptr++=counterMode >> 8;
+
+      return 12;
+    } 
+
+
+  /*
+   * Initialise the T1 timer
+   */
+
+  uint16_t t1Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
+    frequencyOp(1,period,prescaler,clockDivision,counterMode,)
+  }
+
+
+  /*
+   * Initialise the T2 timer
+   */
+
+  uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
+    frequencyOp(2,period,prescaler,clockDivision,counterMode,)
+  }
 }

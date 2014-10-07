@@ -240,7 +240,7 @@ namespace awc {
     *ptr++=p.X >> 8;
 
     *ptr++=p.Y;
-    *ptr++=p.Y >> 8;
+    *ptr=p.Y >> 8;
 
     return 5;
   }
@@ -302,7 +302,7 @@ namespace awc {
     *ptr++=p2.X >> 8;
 
     *ptr++=p2.Y;
-    *ptr++=p2.Y >> 8;
+    *ptr=p2.Y >> 8;
 
     return 9;
   }
@@ -434,7 +434,7 @@ namespace awc {
       *ptr++=operation;
       *ptr++=address;
       *ptr++=address >> 8;
-      *ptr++=address >> 16;
+      *ptr=address >> 16;
 
       return 5;
     }
@@ -482,7 +482,7 @@ namespace awc {
     *ptr++=cmd::PROGRAM_FLASH;
     *ptr++=address;
     *ptr++=address >> 8;
-    *ptr++=address >> 16;
+    *ptr=address >> 16;
 
     // await 256 bytes of page data
 
@@ -511,7 +511,7 @@ namespace awc {
 
       *ptr++=count;
       *ptr++=count >> 8;
-      *ptr++=count >> 16;
+      *ptr=count >> 16;
 
       // await the data
 
@@ -568,7 +568,7 @@ namespace awc {
 
       *ptr++=address;
       *ptr++=address >> 8;
-      *ptr++=address >> 16;
+      *ptr=address >> 16;
 
       return 15;
     }
@@ -627,10 +627,49 @@ namespace awc {
       *ptr++=clockDivision >> 8;
 
       *ptr++=counterMode;
-      *ptr++=counterMode >> 8;
+      *ptr=counterMode >> 8;
 
       return 12;
     } 
+
+    uint16_t initCompareOp(uint8_t timNumber,uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_TIMER_INIT_COMPARE;
+      *ptr++=timNumber;
+
+      *ptr++=compareValue;
+      *ptr++=compareValue >> 8;
+      *ptr++=compareValue >> 16;
+      *ptr++=compareValue >> 24;
+
+      *ptr++=ocMode;
+      *ptr++=ocMode >> 8;
+
+      *ptr++=polarity;
+      *ptr++=polarity >> 8;
+
+      *ptr++=preload;
+      *ptr=preload >> 8;
+
+      return 12;
+    }
+
+    uint16_t setCompareOp(uint8_t timNumber,uint32_t compareValue) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_TIMER_SET_COMPARE;
+      *ptr++=timNumber;
+
+      *ptr++=compareValue;
+      *ptr++=compareValue >> 8;
+      *ptr++=compareValue >> 16;
+      *ptr=compareValue >> 24;
+
+      return 6;
+    }
   }
 
 
@@ -649,5 +688,154 @@ namespace awc {
 
   uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode) {
     return frequencyOp(2,period,prescaler,clockDivision,counterMode);
+  }
+
+
+  /*
+   * Initialise the T1 output compare
+   */
+
+  uint16_t t1InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload) {
+    return initCompareOp(1,compareValue,ocMode,polarity,preload);
+  }
+
+
+  /*
+   * Initialise the T2 output compare
+   */
+
+  uint16_t t2InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload) {
+    return initCompareOp(2,compareValue,ocMode,polarity,preload);
+  }
+
+
+  /*
+   * Set the T1 compare value
+   */
+
+  uint16_t t1SetCompare(uint32_t compareValue) {
+    return setCompareOp(1,compareValue);
+  } 
+
+
+  /*
+   * Set the T2 compare value
+   */
+
+  uint16_t t2SetCompare(uint32_t compareValue) {
+    return setCompareOp(2,compareValue);
+  }
+
+
+  /*
+   * T1/T2 control operations
+   */
+
+  namespace {
+
+    uint16_t timControlOp(uint16_t timNumber,uint8_t enable) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_TIMER_CONTROL;
+      *ptr++=timNumber;
+      *ptr=enable;
+
+      return 3;
+    }
+  }
+
+
+  /*
+   * Enable/disable T1/T2
+   */
+
+  uint16_t t1Enable() {
+    return timControlOp(1,1);
+  }
+
+  uint16_t t1Disable() {
+    return timControlOp(1,0);
+  }
+
+  uint16_t t2Enable() {
+    return timControlOp(2,1);
+  }
+
+  uint16_t t2Disable() {
+    return timControlOp(2,0);
+  }
+
+
+  /*
+   * T1/T2 GPIO operations
+   */
+
+  namespace {
+
+    uint16_t gpioModeOp(uint8_t pinNumber,GpioSlew slew,GpioDrive drive) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_GPIO_CONFIGURE;
+      *ptr++=timNumber;
+      *ptr++=slew;
+      *ptr=drive;
+
+      return 4;
+    }
+
+    uint16_t gpioControlOp(uint8_t pinNumber,uint8_t set) {
+
+      uint8_t *ptr=CoProcessor::buffer;
+
+      *ptr++=cmd::TPIN_GPIO_CONTROL;
+      *ptr++=timNumber;
+      *ptr=set;
+
+      return 3;
+    }
+  }
+
+
+  /*
+   * Configure GPIO for T1/T2
+   */
+
+  uint16_t t1Gpio(GpioSlew slew,GpioDrive drive) {
+    return gpioModeOp(1,slew,drive);
+  }
+
+  uint16_t t2Gpio(GpioSlew slew,GpioDrive drive) {
+    return gpioModeOp(2,slew,drive);
+  }
+
+
+  /*
+   * Set/reset the T1/T2 GPIO pins
+   */
+
+  uint16_t t1GpioSet() {
+    gpioControlOp(1,1);
+  }
+
+  uint16_t t1GpioReset() {
+    gpioControlOp(1,0);
+  }
+
+  uint16_t t1GpioControl(bool set) {
+    gpioControlOp(1,set);
+  }
+
+  uint16_t t2GpioSet() {
+    gpioControlOp(2,1);
+  }
+
+  uint16_t t2GpioReset() {
+    gpioControlOp(2,0);
+  }
+
+  uint16_t t2GpioControl(bool set) {
+    gpioControlOp(2,set);
   }
 }

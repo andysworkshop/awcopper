@@ -69,7 +69,7 @@ namespace awc {
 
 
   /*
-   * Timer counter modes
+   * Timer enumerations
    */
 
   enum CounterMode {
@@ -78,6 +78,36 @@ namespace awc {
     COUNTERMODE_CENTER1 = 0x20,
     COUNTERMODE_CENTER2 = 0x40,
     COUNTERMODE_CENTER3 = 0x0060
+  };
+
+  enum OcMode {
+    OCMODE_TIMING = 0,
+    OCMODE_ACTIVE = 0X10,
+    OCMODE_INACTIVE 0X20,
+    OCMODE_TOGGLE = 0X30,
+    OCMODE_PWM1 = 0X60,
+    OCMODE_PWM2 = 0X70
+  };
+
+  enum OcPolarity {
+    OCPOLARITY_HIGH = 0,
+    OCPOLARITY_LOW = 2
+  };
+
+  enum OcPreload {
+    OCPRELOAD_ENABLE = 8,
+    OCPRELOAD_DISABLE = 0
+  };
+
+  enum GpioSlew {
+    GPIOSLEW_2 = 0,
+    GPIOSLEW_10 = 1,
+    GPIOSLEW_50 = 3
+  };
+
+  enum GpioDrive {
+    GPIODRIVE_PUSHPULL = 0,
+    GPIODRIVE_OPENDRAIN = 1,
   };
 
 
@@ -188,4 +218,25 @@ namespace awc {
 
   uint16_t t1Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
   uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
+
+  uint16_t t1InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload);
+  uint16_t t2InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload);
+
+  uint16_t t1SetCompare(uint32_t compareValue);
+  uint16_t t2SetCompare(uint32_t compareValue);
+
+  uint16_t t1Enable();
+  uint16_t t1Disable();
+  uint16_t t2Enable();
+  uint16_t t2Disable();
+
+  uint16_t t1Gpio(GpioSlew slew,GpioDrive drive);
+  uint16_t t2Gpio(GpioSlew slew,GpioDrive drive);
+
+  uint16_t t1GpioSet();
+  uint16_t t2GpioSet();
+  uint16_t t1GpioReset();
+  uint16_t t2GpioReset();
+  uint16_t t1GpioControl(bool set);
+  uint16_t t2GpioControl(bool set);
 }

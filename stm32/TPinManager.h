@@ -49,12 +49,12 @@ class TPinManager {
      * Timer configuration for T2
      */
 
-    typedef Timer2<
-        Timer2InternalClockFeature,     // the timer clock source is APB
-        TimerChannel4Feature<>,         // we're going to use channel 4
-        Timer2GpioFeature<              // we want to output something to GPIO
+    typedef Timer15<
+        Timer15InternalClockFeature,    // the timer clock source is APB
+        TimerChannel2Feature<>,         // we're going to use channel 2
+        Timer15GpioFeature<             // we want to output something to GPIO
           TIMER_REMAP_NONE,             // the GPIO output will not be remapped
-          TIM2_CH4_OUT                  // we will output channel 4 to GPIO
+          TIM15_CH2_OUT                 // we will output channel 2 to GPIO
         >
       > T2_TimerType;
 

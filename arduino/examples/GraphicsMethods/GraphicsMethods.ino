@@ -347,10 +347,10 @@ void rectDemo() {
   
   for(start=millis();millis()-start<10000;) {
 
-    rc.X=(random() % Copper::WIDTH/2);
-    rc.Y=(random() % Copper::HEIGHT/2);
-    rc.Width=random() % (Copper::WIDTH-rc.X-1);
-    rc.Height=random() % (Copper::HEIGHT-rc.Y-1);
+    rc.X=random(Copper::WIDTH/2);
+    rc.Y=random(Copper::HEIGHT/2);
+    rc.Width=random(1,Copper::WIDTH-rc.X-1);
+    rc.Height=random(1,Copper::HEIGHT-rc.Y-1);
 
     if(filled && millis()-start>5000) {
       filled=false;
@@ -384,18 +384,18 @@ void ellipseDemo() {
   
   for(start=millis();millis()-start<10000;) {
 
-    p.X=Copper::WIDTH/4+(random() % (Copper::WIDTH/2));
-    p.Y=Copper::HEIGHT/4+(random() % (Copper::HEIGHT/2));
+    p.X=(Copper::WIDTH/4)+random(Copper::WIDTH/2);
+    p.Y=(Copper::HEIGHT/4)+random(Copper::HEIGHT/2);
 
     if(p.X<Copper::WIDTH/2)
-      s.Width=random() % p.X;
+      s.Width=random(1,p.X);
     else
-      s.Width=random() % (Copper::WIDTH-p.X);
+      s.Width=random(1,Copper::WIDTH-p.X);
 
     if(p.Y<Copper::HEIGHT/2)
-      s.Height=random() % p.Y;
+      s.Height=random(1,p.Y);
     else
-      s.Height=random() % (Copper::HEIGHT-p.Y);
+      s.Height=random(1,Copper::HEIGHT-p.Y);
 
     if(filled && millis()-start>5000) {
       filled=false;

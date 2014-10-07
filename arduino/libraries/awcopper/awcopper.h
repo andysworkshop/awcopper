@@ -82,11 +82,11 @@ namespace awc {
 
   enum OcMode {
     OCMODE_TIMING = 0,
-    OCMODE_ACTIVE = 0X10,
-    OCMODE_INACTIVE 0X20,
-    OCMODE_TOGGLE = 0X30,
-    OCMODE_PWM1 = 0X60,
-    OCMODE_PWM2 = 0X70
+    OCMODE_ACTIVE = 0x10,
+    OCMODE_INACTIVE = 0x20,
+    OCMODE_TOGGLE = 0x30,
+    OCMODE_PWM1 = 0x60,
+    OCMODE_PWM2 = 0x70
   };
 
   enum OcPolarity {

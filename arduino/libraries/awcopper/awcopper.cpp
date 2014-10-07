@@ -778,7 +778,7 @@ namespace awc {
       uint8_t *ptr=CoProcessor::buffer;
 
       *ptr++=cmd::TPIN_GPIO_CONFIGURE;
-      *ptr++=timNumber;
+      *ptr++=pinNumber;
       *ptr++=slew;
       *ptr=drive;
 
@@ -790,7 +790,7 @@ namespace awc {
       uint8_t *ptr=CoProcessor::buffer;
 
       *ptr++=cmd::TPIN_GPIO_CONTROL;
-      *ptr++=timNumber;
+      *ptr++=pinNumber;
       *ptr=set;
 
       return 3;

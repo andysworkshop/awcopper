@@ -67,6 +67,7 @@ void jpegDemo() {
   uint16_t size,batchSize,i;
   const uint8_t *data;
   uint8_t buffer[128],*bufptr;      // multiple of 32 makes the most of the Wire buffer
+  uint32_t start,elapsed;
   
   prompt("JPEG demo uploaded from the Arduino");
   
@@ -89,8 +90,8 @@ void jpegDemo() {
   copro << awc::jpeg(Rectangle(70,26,500,308),size);
 
   // send the expected data in batches
-  
-  while(size) {
+
+  for(start=millis();size;size-=batchSize) {
     
     batchSize=size<sizeof(buffer) ? size : sizeof(buffer);
     bufptr=buffer;
@@ -99,12 +100,17 @@ void jpegDemo() {
       *bufptr++=pgm_read_byte_near(data++);
     
     copro << awc::Bytes(buffer,batchSize);
-    size-=batchSize;
   }
+
+  elapsed=millis()-start;
   
   // enjoy for 10 seconds :)
   
   delay(10000);
+  
+  // show how long it took to display
+  
+  showCount(1,elapsed,"jpeg image");
 }
 
 
@@ -138,7 +144,7 @@ void sleepDemo() {
 void textDemo() {
      
   Size size;
-  uint32_t start;
+  uint32_t start,count;
   Point p;
   
   prompt("Text demo");
@@ -152,7 +158,11 @@ void textDemo() {
     
     copro << awc::foreground(random(awc::WHITE))
           << awc::text(p,"The quick brown fox jumped over the lazy dogs",awc::SOLID);
+
+    count++;
   }
+  
+  showCount(count,5000,"text strings");
 }
 
 
@@ -201,7 +211,7 @@ void fontDemo() {
 void polylineDemo() {
   
   Point p[5];
-  uint32_t cr,start;
+  uint32_t cr,start,total;
   int16_t disp;
   uint16_t count;
   
@@ -218,6 +228,7 @@ void polylineDemo() {
   cr=awc::RED;
   count=0;
   disp=2;
+  total=0;
   
   for(start=millis();millis()-start<5000;) {
     
@@ -233,7 +244,10 @@ void polylineDemo() {
     }
     
     cr+=4;
+    total++;
   }
+  
+  showCount(total,5000,"polylines");
 }
 
 
@@ -243,11 +257,12 @@ void polylineDemo() {
 
 void plotDemo() {
 
-  uint32_t start;
+  uint32_t start,count;
   Point p;
   
   prompt("plot points demo");
   
+  count=0;
   for(start=millis();millis()-start<10000;) {
     
     p.X=random(Copper::WIDTH);
@@ -255,7 +270,11 @@ void plotDemo() {
     
     copro << awc::foreground(random(awc::WHITE)) 
           << awc::plot(p);
+          
+    count++;
   }
+  
+  showCount(count,10000,"coloured points");
 }
 
 
@@ -266,10 +285,11 @@ void plotDemo() {
 void lineDemo() {
 
   uint16_t x1,y1,x2,y2;
-  uint32_t start;
+  uint32_t start,count;
   
   prompt("Line demo");
 
+  count=0;
   for(start=millis();millis()-start<5000;) {
 
     x1=random(Copper::WIDTH-1);
@@ -279,7 +299,10 @@ void lineDemo() {
 
     copro << awc::foreground(random(awc::WHITE))    // random colour foreground
           << awc::line(Point(x1,y1),Point(x2,y2));  // random line
+
+    count++;
   }
+  showCount(count,5000,"lines");
 }
 
 
@@ -289,15 +312,19 @@ void lineDemo() {
  
 void clearDemo() {
 
-  uint32_t start;
+  uint32_t start,count;
 
   prompt("Clear screen demo");
 
+  count=0;
   for(start=millis();millis()-start<5000;) {
 
     copro << awc::background(random(awc::WHITE))
           << awc::clear();
+
+    count++;
   }
+  showCount(count,5000,"screen clearances");
 }
 
 
@@ -337,13 +364,14 @@ void basicColoursDemo() {
  
 void rectDemo() {
 
-  uint32_t start;
+  uint32_t start,count;
   Rectangle rc;
   bool filled;
   
   prompt("Rectangle demo");
 
   filled=true;
+  count=0;
   
   for(start=millis();millis()-start<10000;) {
 
@@ -363,7 +391,11 @@ void rectDemo() {
       copro << awc::fillRectangle(rc);
     else
       copro << awc::rectangle(rc);
+  
+    count++;
   }
+  
+  showCount(count,5000,"rectangles");
 }
 
 
@@ -375,12 +407,13 @@ void ellipseDemo() {
 
   Point p;
   Size s;
-  uint32_t start;
+  uint32_t start,count;
   bool filled;
 
   prompt("Ellipse demo");
 
   filled=true;
+  count=0;
   
   for(start=millis();millis()-start<10000;) {
 
@@ -408,7 +441,10 @@ void ellipseDemo() {
       copro << fillEllipse(p,s);
     else
       copro << ellipse(p,s);
+  
+    count++;
   }
+  showCount(count,5000,"ellipses");
 }
 
 
@@ -475,6 +511,27 @@ void prompt(const char *str) {
  
  clearScreen();
 }
+
+
+/*
+ * Show a basic post-demo count display
+ */
+ 
+void showCount(uint32_t count,uint32_t ms,const char *what) {
+
+  char buffer[100];
+  
+  sprintf(buffer,"%lu %s in %lu milliseconds",count,what,ms);
+  
+  clearScreen();
+  
+  copro << awc::foreground(awc::WHITE)      // set foreground to white
+        << awc::font(awc::ATARI)            // select the Atari font
+        << awc::text(Point::Origin,str);    // text string at the origin
+
+  delay(3000);
+}
+
 
 /*
  * Clear the screen to black

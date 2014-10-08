@@ -150,7 +150,8 @@ void textDemo() {
   prompt("Text demo");
 
   copro << font(awc::PROGGY);
-
+  count=0;
+  
   for(start=millis();millis()-start<5000;) {
   
     p.X=random(Copper::WIDTH-200);
@@ -324,6 +325,8 @@ void clearDemo() {
 
     count++;
   }
+  
+  delay(3000);    // catch up!
   showCount(count,5000,"screen clearances");
 }
 

@@ -525,9 +525,9 @@ void showCount(uint32_t count,uint32_t ms,const char *what) {
   
   clearScreen();
   
-  copro << awc::foreground(awc::WHITE)      // set foreground to white
-        << awc::font(awc::ATARI)            // select the Atari font
-        << awc::text(Point::Origin,str);    // text string at the origin
+  copro << awc::foreground(awc::WHITE)       // set foreground to white
+        << awc::font(awc::ATARI)             // select the Atari font
+        << awc::text(Point::Origin,buffer);  // text string at the origin
 
   delay(3000);
 }

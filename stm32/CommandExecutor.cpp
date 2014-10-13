@@ -16,6 +16,11 @@ CommandExecutor::CommandExecutor(CommandReader& reader,Panel& panel,StatusIndica
     _commandBuffer(reader.getCommandBuffer()),
     _panel(panel),
     _indicators(indicators ){
+
+  // we want the immediate wake-up low power mode and we'll be calling it from normal
+  // code so the sleep-on-exit bit is irrelevant
+
+  NVIC_SystemLPConfig(NVIC_LP_SLEEPDEEP | NVIC_LP_SLEEPONEXIT,DISABLE);
 }
 
 
@@ -29,7 +34,14 @@ void CommandExecutor::run() {
 
     // wait for data to become available
 
-    while(_commandBuffer.availableToRead()==0);
+    while(_commandBuffer.availableToRead()==0) {
+
+#if !defined(DEBUG)
+      // go to immediate sleep mode. will wake immediately on data arrival (IRQ)
+
+      __WFI();
+#endif
+    }
 
     // keep the busy light on while buffered commands are processed
 

@@ -23,6 +23,10 @@ using awc::Size;
 extern const uint32_t JpegData,JpegDataSize;
 
 
+/*
+ * Setup the comms and initialise the LCD
+ */
+
 void setup() {
 
   // initialise the I2C library for 400kHz
@@ -46,6 +50,11 @@ void setup() {
   delay(500);
 }
 
+
+/*
+ * Show a looping demo
+ */
+
 void loop() {
   jpegDemo();
   ellipseDemo();
@@ -61,7 +70,10 @@ void loop() {
   sleepDemo();
 }
 
-
+/*
+ * Show a large JPEG that's compiled into this sketch
+ */
+ 
 void jpegDemo() {
 
   uint16_t size,batchSize,i;
@@ -114,6 +126,10 @@ void jpegDemo() {
 }
 
 
+/*
+ * Demonstrate putting the panel to sleep
+ */
+ 
 void sleepDemo() {
 
   prompt("Sleep demo");
@@ -141,6 +157,10 @@ void sleepDemo() {
 }
 
 
+/*
+ * Show random text repeatedly
+ */
+ 
 void textDemo() {
      
   Size size;
@@ -167,6 +187,10 @@ void textDemo() {
 }
 
 
+/*
+ * Show all available fonts for a few seconds
+ */
+ 
 void fontDemo() {
 
   static struct {
@@ -508,11 +532,11 @@ void prompt(const char *str) {
  
  // wait for 3 secs
  
- delay(3000);
+  delay(3000);
  
- // clear and return
+  // clear and return
  
- clearScreen();
+  clearScreen();
 }
 
 

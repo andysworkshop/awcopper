@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <Arduino.h>
+#include <Wire.h>
+#include <stdint.h>
 #include "ColourNames.h"
 #include "Size.h"
 #include "Point.h"
@@ -42,8 +45,8 @@ namespace awc {
    */
 
   enum TextMode {
-    SOLID,
-    TRANSPARENT
+    SOLID,            // gaps between strokes are filled with the background
+    TRANSPARENT       // gaps between strokes are passed over    
   };
 
 
@@ -100,19 +103,19 @@ namespace awc {
   };
 
   enum GpioSlew {
-    GPIOSLEW_2 = 0,
-    GPIOSLEW_10 = 1,
-    GPIOSLEW_50 = 3
+    GPIOSLEW_2 = 0,                 // 2MHz slew rate
+    GPIOSLEW_10 = 1,                // 10MHz slew rate
+    GPIOSLEW_50 = 36                // 50MHz slew rate
   };
 
   enum GpioDrive {
-    GPIODRIVE_PUSHPULL = 0,
-    GPIODRIVE_OPENDRAIN = 1,
+    GPIODRIVE_PUSHPULL = 0,         // normal 2.8V/GND driver
+    GPIODRIVE_OPENDRAIN = 1,        // GND driver, open-drain high. must be pulled up externally.
   };
 
 
   /*
-   * Main coprocessor class.
+   * Main coprocessor class. Declare just one of these per application.
    */
 
   class CoProcessor {
@@ -168,75 +171,13 @@ namespace awc {
       HEIGHT = 640
     };
   };
-
-
-  /*
-   * Command declarations
-   */
-
-  uint16_t backlight(uint8_t percentage);
-  uint16_t window(const Rectangle& rc);
-  uint16_t sleep();
-  uint16_t wake();
-  uint16_t gamma(const Gamma& gamma);
-  uint16_t beginWriting();
-  uint16_t writeData(const void *data,uint16_t count);
-
-  uint16_t background(uint32_t colorref);
-  uint16_t foreground(uint32_t colorref);
-
-  uint16_t clear();
-  uint16_t clearRectangle(const Rectangle& rc);
-  uint16_t fillRectangle(const Rectangle& rc);
-  uint16_t rectangle(const Rectangle& rc);
-  uint16_t gradientFillRectangle(const Rectangle& rc,Direction dir,uint32_t firstColour,uint32_t lastColour);
-
-  uint16_t line(const Point& p1,const Point& p2);
-  uint16_t polyline(const Point *p,uint8_t count);
-
-  uint16_t font(FontId fid);
-  uint16_t text(const Point& p,const char *str,TextMode textMode=TRANSPARENT);
-
-  uint16_t plot(const Point& p);
-
-  uint16_t ellipse(const Point& center,const Size& size);
-  uint16_t fillEllipse(const Point& center,const Size& size);
-
-  uint16_t eraseFlash();
-  uint16_t erase4KSector(uint32_t address);
-  uint16_t erase8KSector(uint32_t address);
-  uint16_t erase64KSector(uint32_t address);
-  uint16_t program(uint32_t address);
-
-  uint16_t jpeg(const Rectangle& rc,uint32_t count);
-  uint16_t bitmap(const Rectangle& rc,uint32_t count);
-  uint16_t lzgBitmap(const Rectangle& rc,uint32_t count);
-
-  uint16_t jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address);
-  uint16_t bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
-  uint16_t lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
-
-  uint16_t t1Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
-  uint16_t t2Frequency(uint32_t period,uint16_t prescaler,ClockDivision clockDivision,CounterMode counterMode);
-
-  uint16_t t1InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload);
-  uint16_t t2InitCompare(uint32_t compareValue,OcMode ocMode,OcPolarity polarity,OcPreload preload);
-
-  uint16_t t1SetCompare(uint32_t compareValue);
-  uint16_t t2SetCompare(uint32_t compareValue);
-
-  uint16_t t1Enable();
-  uint16_t t1Disable();
-  uint16_t t2Enable();
-  uint16_t t2Disable();
-
-  uint16_t t1Gpio(GpioSlew slew,GpioDrive drive);
-  uint16_t t2Gpio(GpioSlew slew,GpioDrive drive);
-
-  uint16_t t1GpioSet();
-  uint16_t t2GpioSet();
-  uint16_t t1GpioReset();
-  uint16_t t2GpioReset();
-  uint16_t t1GpioControl(bool set);
-  uint16_t t2GpioControl(bool set);
 }
+
+
+/*
+ * Include the inline implementation. Defining everything inline (look it up: many people misunderstand
+ * what "inline" actually does) reduces overall code size. In the GraphicsMethods demo it saves ~400 bytes
+ * of flash.
+ */
+
+#include "awcopperImpl.h"

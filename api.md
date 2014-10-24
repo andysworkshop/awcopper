@@ -347,4 +347,125 @@ This function allows you to draw some text on the display at the position you su
 
 This sequence will set the current foreground to white, the font to _Atari ST_ and then draw the text "Hello World" at the origin. I have chosen accept the default argument of `awc::TRANSPARENT` instead of specifying it manually. The code reads cleaner that way.
 
-### Image API operations
+### The Image API
+
+_awcopper_ offers a comprehensive suite of functionality for displaying bitmapped images. JPEG, LZG (it's like PNG) and uncompressed bitmaps are all supported and you can just to stream them from your Arduino or from the on-board flash chip supplied with _awcopper_.
+
+
+#### Uncompressed images
+
+Uncompressed images are nothing more than a stream of pixel data pre-rendered into a form that can be streamed directly into the display. The _bm2rgbi_ tool supplied with _awcoppper_ will create these uncompressed files for you from a variety of sources such as JPEG, PNG etc.
+
+XXX insert bm2rgi usage here
+
+The primary advantage of uncompressed images is that they are very fast because there is no decompression required. Pair this with a fast storage medium such as the on-board flash and you'll get the best performance. The downside is that uncompressed images can get very large. You wouldn't want to try storing too many of them in your Arduino Uno program memory for example.
+
+#### LZG Compressed images
+
+LZG is a compact compressor that offers very similar performance to the PNG format with less file format overhead. If your graphics are primarily computer generated, such as icons, then LZG will probably get you the best compression. The _bm2rgbi_ tool supplied with _awcoppper_ will create LZG-compressed files for you from a variety of sources such as JPEG, PNG etc.
+
+XXX insert bm2rgi usage here
+
+The only downside to LZG compressed images is that there is a processing overhead associated with the decompression. This overhead may, however, be negated by the advantage of having to transfer less data from the storage medium.
+
+#### JPEG Compressed images
+
+Everyone knows JPEGs, right? They offer tunable compression and great ratios when the image is more 'real world' than computer generated, for example with photographs. _awcopper_ supports the most common JPEG variants but does not support _progressive_ JPEGs.
+
+JPEG decoding takes the most out of the processing power offered by the ARM coprocessor so you'll notice the image appearing on screen as it's been decoded.
+
+### Image API functions
+
+Let's take a look at the functions offered by the image API.
+
+### jpeg()
+
+    jpeg(const Rectangle& rc,uint32_t count)
+
+The `jpeg` method begins the process of writing a JPEG image to the display. The `rc` parameter defines where on the display you want it to appear. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the JPEG file.
+
+This method tells _awcopper_ to expect the bytes that make up the JPEG to be sent to it immediately afterwards. You cannot issue any other command (except `reset()`) until those bytes have been sent. How do you send the data? Easy, you just stream as many `Bytes` structures as necessary into the coprocessor object as you need to.
+
+    uint16_t size,batchSize,i;
+    const uint8_t *data;
+    uint8_t buffer[128],*bufptr;   // multiple of 32 makes the most of the Wire buffer
+    
+    data=reinterpret_cast<const uint8_t *>(&JpegData);
+    size=reinterpret_cast<uint16_t>(&JpegDataSize);
+
+    copro << awc::jpeg(Rectangle(70,26,500,308),size);
+
+    // send the expected data in batches
+
+    for(;size;size-=batchSize) {
+    
+      batchSize=size<sizeof(buffer) ? size : sizeof(buffer);
+      bufptr=buffer;
+    
+      for(i=batchSize;i;i--)
+        *bufptr++=pgm_read_byte_near(data++);
+    
+      copro << awc::Bytes(buffer,batchSize);
+    }
+
+This example is taken from the JPEG demo in the _GraphicsMethods_ example sketch. You can see how we first use the `jpeg()` function to tell _awcopper_ whats coming next and then we go into a loop sending the data in small batches.
+
+If you can fit your images along with your program into the 32Kb space on the Arduino then it's possible to include the image data directly, and that's what the example above does. Take a look at the _GraphicsMethods_ example and in particular the `JpegGraphics.cpp` tab to see how we use a trivially small and reusable bit of assembly language to directly import binary data into our sketch.
+
+### bitmap()
+
+    bitmap(const Rectangle& rc,uint32_t count)
+
+The `bitmap()` method is used to tell _awcopper_ that we want to display an uncompressed bitmap. This merely prepares _awcopper_ to receive the data and tells it to expect a stream of exactly `count` bytes.
+
+The way that this streaming works is exactly the same as for the `jpeg()` method, documented above. Please see the above documentation for `jpeg()` for reference and the _UncompressedBitmap_ example code for an example.
+
+### lzgBitmap()
+
+    lzgBitmap(const Rectangle& rc,uint32_t count)
+
+The `lzgBitmap()` method is used to tell _awcopper_ that we want to display an LZG compressed bitmap. This merely prepares _awcopper_ to receive the data and tells it to expect a stream of exactly `count` compressed bytes.
+
+The way that this streaming works is exactly the same as for the `jpeg()` method, documented above. Please see the above documentation for `jpeg()` for reference and the _LZGBitmap_ example code for an example.
+
+### jpegFlash()
+
+    jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address)
+
+The `jpegFlash` function is used to transfer a JPEG stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the JPEG file. The `address` parameter is the address in the flash device where the image is stored.
+
+The flash IC is much larger than the program memory on your Arduino and can be accessed by the ARM coprocessor, asynchronously to your Arduino, at tens of megabits per second so it makes a lot of sense to store your graphics on the flash chip.
+
+XXX EXAMPLE FLASH JPEG
+
+### bitmapFlash()
+
+    bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address)
+
+The `bitmapFlash` function is used to transfer an uncompressed graphic stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the bitmap file. The `address` parameter is the address in the flash device where the image is stored.
+
+The ARM coprocessor is able to access uncompressed graphics from the flash chip so quickly that this method of storage is generally suitable for a responsive graphical user interface. In fact, that is what I did when developing the user interface to my [reflow oven project](http://andybrown.me.uk/wk/2014/05/11/awreflow/).
+
+XXX EXAMPLE FLASH BITMAP
+
+### lzgBitmapFlash()
+
+    lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
+
+The `lzgBitmapFlash` function is exactly the same as the `bitmapFlash()` function except that it expects the data stored at `address` to be LZG-compressed. Please refer to the documentation for `bitmapFlash()` for further information.
+
+XXX EXAMPLE LZG FLASH BITMAP
+
+### The onboard flash chip
+
+_awcopper_ comes with an onboard 16 megabit flash IC that allows you to store graphics for fast retrieval while your program is running. The _awcopper_ API offers full access to the program/erase operations and a _ProgramFlash_ example is supplied that allows you to download images from your PC over the USB cable and program them into flash.
+
+### eraseFlash()
+
+    eraseFlash()
+
+Sectors in the flash device must be erased before they can be programmed. The `eraseFlash()` method erases the entire flash IC. This will take some seconds to execute. During that time you may continue to stream more commands to _awcopper_ and they will be queued in the FIFO for execution as soon as the erase command has completed.
+
+    copro << awc::eraseFlash();
+
+Simple to execute, but it will take a few seconds to complete.

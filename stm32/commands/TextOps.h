@@ -42,7 +42,6 @@ namespace cmd {
 
     // wait for, and then read the parameters
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     Point pos(parameters[0],parameters[1]);
@@ -63,10 +62,6 @@ namespace cmd {
     // print each character in turn
 
     for(;;) {
-
-      // wait for data
-
-      while(commandBuffer.availableToRead()==0);
 
       // break out when zero is read
 

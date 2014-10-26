@@ -38,7 +38,6 @@ namespace cmd {
 
     // read the co-ordinates and plot the point
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
     gl.plotPoint(Point(params[0],params[1]));
   }

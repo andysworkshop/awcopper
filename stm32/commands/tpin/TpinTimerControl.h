@@ -37,7 +37,6 @@ namespace cmd {
 
     // read the parameters
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(params,PARAMETER_COUNT);
 
     // initialise the channel

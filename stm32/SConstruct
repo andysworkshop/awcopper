@@ -17,15 +17,18 @@ import subprocess
 def usage():
 
     print """
-Usage: scons mode=<MODE> [-jX | -c]
+Usage: scons mode=<MODE> [-jX | -c] [overclock=yes]
 
   <MODE>: debug/release.
     debug   = -Og
     release = combination of -Os and -O3
 
+  [overclock]
+    specify this option to overclock the MCU to 64MHz
+
   Examples using -j to do a 4-job parallel build:
     scons mode=debug -j4
-    scons mode=release -j4
+    scons mode=release overclock=yes -j4
 
   The -c (clean) option removes the build output files.
 """
@@ -65,8 +68,13 @@ env.Replace(AS="arm-none-eabi-as")
 env.Replace(CCFLAGS=["-Wall","-Werror","-ffunction-sections","-fdata-sections","-fno-exceptions","-mthumb","-gdwarf-2","-pipe","-mcpu=cortex-m0","-DSTM32PLUS_F0_51","-DHSE_VALUE=8000000"])
 env.Replace(CXXFLAGS=["-Wextra","-pedantic-errors","-fno-rtti","-std=gnu++11","-fno-threadsafe-statics"])
 env.Append(ASFLAGS="-mcpu=cortex-m0")
-env.Append(LINKFLAGS=["-Xlinker","--gc-sections","-mthumb","-g3","-gdwarf-2","-mcpu=cortex-m0"])
+env.Append(LINKFLAGS=["-Xlinker","--gc-sections","-mthumb","-g3","-gdwarf-2","-mcpu=cortex-m0","--specs=nano.specs"])
 env.Append(LINKFLAGS=["-Tsystem/f051/Linker.ld","-Wl,-wrap,__aeabi_unwind_cpp_pr0","-Wl,-wrap,__aeabi_unwind_cpp_pr1","-Wl,-wrap,__aeabi_unwind_cpp_pr2"])
+
+# process the overclock option
+
+if ARGUMENTS.get('overclock') == 'yes':
+    env.Append(CCFLAGS=["-DOVERCLOCK"]);
 
 # set the include directories - not a simple task on cygwin
 

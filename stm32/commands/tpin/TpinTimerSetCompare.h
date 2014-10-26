@@ -18,11 +18,6 @@ namespace cmd {
    */
 
   struct TpinTimerSetCompare {
-
-    enum {
-      PARAMETER_COUNT=5
-    };
-
     static void execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer);
   };
 
@@ -37,8 +32,6 @@ namespace cmd {
     uint32_t compareValue;
 
     // read the parameters
-
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
     pinNumber=commandBuffer.managedRead();
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&compareValue),4);

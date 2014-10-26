@@ -191,6 +191,11 @@ void FlashInputStream::beginRefreshBuffer() {
   if(_bufferPos<BUFFER_SIZE && _bytesRemaining>0)
     return;
 
+  // do nothing if no data remaining
+
+  if(_bytesRemaining==0)
+    return;
+
   // transfer up to the buffer size
 
   if(_bytesRemaining<BUFFER_SIZE)

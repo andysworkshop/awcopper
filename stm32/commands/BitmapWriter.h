@@ -45,13 +45,11 @@ namespace cmd {
 
     // get the rectangle parameters
 
-    while(commandBuffer.availableToRead()<8);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),8);
     Rectangle rc(params[0],params[1],params[2],params[3]);
 
     // get the data size
 
-    while(commandBuffer.availableToRead()<3);
     dataSize=0;
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&dataSize),3);
 

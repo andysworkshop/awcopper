@@ -18,11 +18,6 @@ namespace cmd {
    */
 
   struct FlashProgram {
-
-    enum {
-      PARAMETER_COUNT = 259
-    };
-
     static void execute(ManagedCircularBuffer& commandBuffer);
   };
 
@@ -36,10 +31,6 @@ namespace cmd {
     uint32_t address;
     uint8_t page[256];
     Flash f;
-
-    // wait for the params to be available then read
-
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
     // get the address first
 

@@ -41,7 +41,6 @@ namespace cmd {
 
     // wait for, and then read the parameters
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(parameters),PARAMETER_COUNT);
 
     // set the display window

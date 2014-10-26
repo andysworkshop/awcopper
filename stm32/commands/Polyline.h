@@ -42,7 +42,6 @@ namespace cmd {
 
     // read the number of points
 
-    while(commandBuffer.availableToRead()==0);
     if((points=commandBuffer.managedRead())<2)
       return;
 
@@ -70,9 +69,6 @@ namespace cmd {
    */
 
   inline void Polyline::readPoint(Point& p,ManagedCircularBuffer& commandBuffer) {
-
-    while(commandBuffer.availableToRead()<sizeof(p.X)+sizeof(p.Y));
-
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&p.X),sizeof(p.X));
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&p.Y),sizeof(p.Y));
   }

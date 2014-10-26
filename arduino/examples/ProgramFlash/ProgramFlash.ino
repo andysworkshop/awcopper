@@ -22,11 +22,12 @@
 typedef awc::LandscapeCoProcessor Copper;
 Copper copro;
 
+// bring these into the main namespace
 
-// current output line
+using awc::Rectangle;
+using awc::Point;
 
-static int16_t textLine;
-
+// forward declaration
 
 void prompt(const char *str,uint32_t cr=awc::WHITE);
 
@@ -68,9 +69,10 @@ void setup() {
 
   Serial.begin(115200);
 
-  // start writing at the origin (first prompt will add 16)
-
-  textLine=-16;
+  // erase the device
+  
+  prompt("Erasing entire flash chip... please wait.");
+  copro << awc::eraseFlash();
 }
 
 
@@ -85,14 +87,38 @@ void loop() {
   
   waitPreamble();
   readAddress(address);
-  readPage(page,pageChecksum);
+  readPage(page,pageChecksum,address);
   
-  if(!readChecksum(pageChecksum))
+  if(!readChecksum(pageChecksum)) {
     sendNack();
+    drawBlock(address,awc::RED);
+  }
   else {
     programPage(address,page);
     sendAck();
+    drawBlock(address,awc::GREEN);
   }
+}
+
+
+/*
+ * Draw an indicator block
+ */
+ 
+void drawBlock(uint32_t address,uint32_t cr) {
+
+  Rectangle rc;
+
+  address/=256;
+  
+  // 160 blocks per row, 4px per block
+  
+  rc.X=4*(address % 160);
+  rc.Y=32+(4*(address/160));
+  rc.Width=rc.Height=3;
+  
+  copro << awc::foreground(cr)
+        << awc::fillRectangle(rc);
 }
 
 
@@ -161,11 +187,13 @@ void readAddress(uint32_t& address) {
  * Read the 256 byte page
  */
 
-void readPage(uint8_t *flashPage,uint8_t& pageChecksum) {
+void readPage(uint8_t *flashPage,uint8_t& pageChecksum,uint32_t address) {
 
   uint8_t received,c;
-
-  prompt("Waiting for 256 bytes of flash page data");
+  char buffer[100];
+  
+  sprintf(buffer,"Waiting for 256 bytes at address %lu",address);
+  prompt(buffer);
 
   received=0;
   pageChecksum=0;
@@ -217,6 +245,8 @@ void programPage(uint32_t address,const uint8_t *flashPage) {
 
   copro << awc::program(address) 
         << awc::Bytes(flashPage,256);
+        
+  delay(50);
 }
 
 
@@ -255,17 +285,13 @@ void errorPrompt(const char *str) {
 
 void prompt(const char *str,uint32_t cr) {
 
-  // move to the next line, or the first if this is the first caller
-
-  textLine+=16;
-  if(textLine>=Copper::HEIGHT) {
-    copro << awc::clear();
-    textLine=0;
-  }
-
+  // clear the background
+  
+  copro << awc::clearRectangle(Rectangle(0,0,Copper::WIDTH,16));
+  
   // set the foreground colour and write out the string
 
   copro << awc::foreground(cr)
-        << awc::text(awc::Point(0,textLine),str);
+        << awc::text(Point::Origin,str);
 }
 

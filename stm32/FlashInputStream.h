@@ -18,7 +18,7 @@ class FlashInputStream : public Flash,
 
   protected:
     enum {
-      BUFFER_SIZE = 1024      // how many bytes read out from the flash per batch
+      BUFFER_SIZE = 768      // how many bytes read out from the flash per batch
     };
 
     uint8_t _buffer[BUFFER_SIZE];   // the internal buffer

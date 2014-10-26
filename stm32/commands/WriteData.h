@@ -41,7 +41,6 @@ namespace cmd {
 
     // wait for the number of pixels to arrive
 
-    while(commandBuffer.availableToRead()<2);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&nPixels),2);
 
     while(nPixels) {
@@ -53,7 +52,7 @@ namespace cmd {
       else
         count=PIXEL_BUFFER;
 
-      while(commandBuffer.availableToRead()<count*2);   // 2 bytes per pixel
+      commandBuffer.managedRead(reinterpret_cast<uint8_t *>(buffer),count*2);
 
       // transfer to LCD
 

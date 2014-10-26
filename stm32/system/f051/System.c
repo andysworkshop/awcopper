@@ -120,7 +120,13 @@
 /** @addtogroup STM32F0xx_System_Private_Variables
   * @{
   */
+
+#ifdef OVERCLOCK
+uint32_t SystemCoreClock    = 64000000;
+#else
 uint32_t SystemCoreClock    = 48000000;
+#endif
+
 __I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
 
 /**
@@ -286,8 +292,12 @@ static void SetSysClock(void)
 
   /* PLL configuration = (HSI/2) * 12 = ~48 MHz */
   RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_PLLSRC | RCC_CFGR_PLLXTPRE | RCC_CFGR_PLLMULL));
-  RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLXTPRE_PREDIV1 | RCC_CFGR_PLLMULL12);
 
+#ifdef OVERCLOCK
+  RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLXTPRE_PREDIV1 | RCC_CFGR_PLLMULL16);
+#else
+  RCC->CFGR |= (uint32_t)(RCC_CFGR_PLLSRC_HSI_Div2 | RCC_CFGR_PLLXTPRE_PREDIV1 | RCC_CFGR_PLLMULL12);
+#endif
   /* Enable PLL */
   RCC->CR |= RCC_CR_PLLON;
 

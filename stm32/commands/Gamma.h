@@ -37,7 +37,6 @@ namespace cmd {
 
     // read the parameters and set the gamma
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
 
     gl.applyGamma(R61523Gamma(params));

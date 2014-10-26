@@ -40,7 +40,6 @@ namespace cmd {
 
     // read the co-ordinates and draw the line
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(params),PARAMETER_COUNT);
 
     gl.drawLine(Point(params[0],params[1]),Point(params[2],params[3]));

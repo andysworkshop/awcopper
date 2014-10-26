@@ -17,11 +17,6 @@ namespace cmd {
    */
 
   struct SetFont {
-
-    enum {
-      PARAMETER_COUNT = 1
-    };
-
     static void execute(Panel& panel,ManagedCircularBuffer& commandBuffer);
   };
 
@@ -37,7 +32,6 @@ namespace cmd {
 
     // read the font index
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     font=commandBuffer.managedRead();
 
     // set the selected font

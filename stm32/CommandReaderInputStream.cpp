@@ -18,10 +18,6 @@ int16_t CommandReaderInputStream::read() {
   if(_remaining==0)
     return E_END_OF_STREAM;
 
-  // block until available
-
-  while(!available());
-
   // decrease remaining and return data
 
   _remaining--;
@@ -35,8 +31,6 @@ int16_t CommandReaderInputStream::read() {
 
 bool CommandReaderInputStream::read(void *buffer,uint32_t size,uint32_t& actuallyRead) {
 
-  uint32_t available;
-
   // check for the end
 
   if(_remaining==0) {
@@ -44,13 +38,9 @@ bool CommandReaderInputStream::read(void *buffer,uint32_t size,uint32_t& actuall
     return true;
   }
 
-  // block until something is available
-
-  while((available=_cbuffer.availableToRead())==0);
-
   // can only read up to the maximum desired
 
-  actuallyRead=available>size ? size : available;
+  actuallyRead=size>_remaining ? _remaining : size;
 
   _remaining-=actuallyRead;
   _cbuffer.managedRead(reinterpret_cast<uint8_t *>(buffer),actuallyRead);

@@ -40,18 +40,15 @@ namespace cmd {
 
     // read the rect
 
-    while(commandBuffer.availableToRead()<8);
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(rparams),8);
     Rectangle rc(rparams[0],rparams[1],rparams[2],rparams[3]);
 
     // read the direction
 
-    while(commandBuffer.availableToRead()<1);
     dir=commandBuffer.managedRead();
 
     // read the colours
 
-    while(commandBuffer.availableToRead()<6);
     commandBuffer.managedRead(cparams,6);
 
     first=((uint32_t)cparams[0]) << 16 |

@@ -18,11 +18,6 @@ namespace cmd {
    */
 
   struct FlashEraseSector {
-
-    enum {
-      PARAMETER_COUNT = 4
-    };
-
     static void execute(ManagedCircularBuffer& commandBuffer);
   };
 
@@ -38,8 +33,6 @@ namespace cmd {
     Flash f;
 
     // wait for the params to be available then read
-
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
     sectorSize=commandBuffer.managedRead();
     address=0;

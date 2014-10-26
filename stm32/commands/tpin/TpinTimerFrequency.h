@@ -21,11 +21,6 @@ namespace cmd {
    */
 
   struct TpinTimerFrequency {
-
-    enum {
-      PARAMETER_COUNT=11
-    };
-
     static void execute(TPinManager& pinManager,ManagedCircularBuffer& commandBuffer);
   };
 
@@ -41,8 +36,6 @@ namespace cmd {
     uint16_t params[3];
 
     // read the parameters
-
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
 
     pinNumber=commandBuffer.managedRead();
     commandBuffer.managedRead(reinterpret_cast<uint8_t *>(&period),4);

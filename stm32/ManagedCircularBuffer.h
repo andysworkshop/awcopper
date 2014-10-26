@@ -78,6 +78,8 @@ inline void ManagedCircularBuffer::checkSuspended() volatile {
  */
 
 inline void ManagedCircularBuffer::managedRead(uint8_t *output,uint32_t size) volatile {
+
+  while(availableToRead()<size);
   circular_buffer<uint8_t>::read(output,size);
   checkSuspended();
 }
@@ -90,6 +92,7 @@ inline void ManagedCircularBuffer::managedRead(uint8_t *output,uint32_t size) vo
 inline uint8_t ManagedCircularBuffer::managedRead() volatile {
   uint8_t b;
 
+  while(availableToRead()==0);
   b=circular_buffer<uint8_t>::read();
   checkSuspended();
   return b;

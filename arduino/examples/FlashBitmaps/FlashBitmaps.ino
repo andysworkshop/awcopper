@@ -22,13 +22,13 @@ using awc::Size;
 
 enum {
   JPEG_ADDRESS=0,
-  JPEG_SIZE=0,
+  JPEG_SIZE=97548,
   
-  BITMAP_ADDRESS=0,
-  BITMAP_SIZE=0,
+  BITMAP_ADDRESS=97792,
+  BITMAP_SIZE=460800,
 
-  LZG_ADDRESS=0,
-  LZG_SIZE=0  
+  LZG_ADDRESS=558592,
+  LZG_SIZE=255682
 };
 
 
@@ -78,22 +78,16 @@ void loop() {
 
 void jpegDemo() {
   
-  uint32_t start,elapsed;
-  const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
+//  const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
+  const Rectangle fullScreen(0,0,500,308);
   
   prompt("JPEG demo from coprocessor external flash");
   
-  start=millis();
-  copro << awc::jpegFlash(fullScreen,JPEG_ADDRESS,JPEG_SIZE);
-  elapsed=millis()-start;
+  copro << awc::jpegFlash(fullScreen,JPEG_SIZE,JPEG_ADDRESS);
   
   // enjoy for 8 seconds :)
   
   delay(8000);
-
-  // show how long it took to display
-  
-  showCount(1,elapsed,"jpeg image");
 }
 
 
@@ -103,22 +97,15 @@ void jpegDemo() {
 
 void bitmapDemo() {
 
-  uint32_t start,elapsed;
   const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
 
   prompt("Uncompressed bitmap demo");
 
-  start=millis();
-  copro << awc::bitmapFlash(fullScreen,BITMAP_ADDRESS,BITMAP_SIZE);
-  elapsed=millis()-start;
+  copro << awc::bitmapFlash(fullScreen,BITMAP_SIZE,BITMAP_ADDRESS);
   
   // enjoy for 8 seconds :)
   
   delay(8000);
-
-  // show how long it took to display
-  
-  showCount(1,elapsed,"bitmap image");
 }
 
 
@@ -132,18 +119,11 @@ void lzgDemo() {
   const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
 
   prompt("LZG Compressed bitmap demo");
-
-  start=millis();
-  copro << awc::lzgBitmapFlash(fullScreen,LZG_ADDRESS,LZG_SIZE);
-  elapsed=millis()-start;
+  copro << awc::lzgBitmapFlash(fullScreen,LZG_SIZE,LZG_ADDRESS);
   
   // enjoy for 8 seconds :)
   
   delay(8000);
-
-  // show how long it took to display
-  
-  showCount(1,elapsed,"LZG bitmap image");
 }
 
  
@@ -165,26 +145,6 @@ void prompt(const char *str) {
   // clear and return
  
   clearScreen();
-}
-
-
-/*
- * Show a basic post-demo count display
- */
- 
-void showCount(uint32_t count,uint32_t ms,const char *what) {
-
-  char buffer[100];
-  
-  sprintf(buffer,"%lu %s in %lu milliseconds",count,what,ms);
-  
-  clearScreen();
-  
-  copro << awc::foreground(awc::WHITE)       // set foreground to white
-        << awc::font(awc::ATARI)             // select the Atari font
-        << awc::text(Point::Origin,buffer);  // text string at the origin
-
-  delay(3000);
 }
 
 

@@ -468,4 +468,125 @@ Sectors in the flash device must be erased before they can be programmed. The `e
 
     copro << awc::eraseFlash();
 
-Simple to execute, but it will take a few seconds to complete.
+Simple to execute, but it will take a few seconds to complete. The blue _busy_ LED will go out when the command has completed.
+
+### erase4KSector()
+
+    erase4KSector(uint32_t address)
+
+Flash devices tend to be arranged into rather large blocks, 64Kb in the case of the _awcopper_ 16Mb chip. It wastes space and causes un-necessary wear on the flash memory if you have to erase 64Kb when you only want to write a smaller amount. This flash IC allows you to erase smaller sectors within the blocks.
+
+`erase4KSector()` will erase 4096 bytes starting at the `address` that you supply. The address is a byte address within the device that must be aligned to a 4096 byte boundary.
+
+	copro << awc::erase4KSector(8192);
+
+The example will erase 4096 bytes starting at address 8192 (the third sector).
+
+### erase8KSector()
+
+	erase8KSector(uint32_t address)
+
+Just like `erase4KSector()` except that it deals in 8192 byte sectors.
+
+### erase64KSector()
+
+	erase64KSector(uint32_t address)
+
+Just like `erase4KSector()` except that it deals in 65536 byte sectors, a complete block.
+
+### program()
+
+	program(uint32_t address)
+
+Use the `program()` function to begin writing a page of data to the flash device at the location given by `address`, which must be on a 256 byte boundary. A page consists of exactly 256 bytes.
+
+`program()` tells _awcopper_ to expect your 256 bytes to arrive next. _awcopper_ will buffer bytes that arrive until exactly 256 have been sent. It will then write your page of data to the flash device. Bytes are sent to the coprocessor by streaming in `Bytes` structures in exactly the same way as you do when you are streaming data into one of the image functions.
+
+The page must have been erased using one of the erase functions before it can be programmed.
+
+    uint8_t flashPage[256];
+    
+    // populate flashPage with valid data
+    
+    copro << awc::program(8192) 
+          << awc::Bytes(flashPage,256);
+
+The example shows the basic page-program sequence. You don't need to worry about waiting for each page program to complete. Just stream in your page programming commands and data and _awcopper_ will apply its flow control to the stream if you manage to fill the FIFO.
+
+### Non-graphical commands
+
+These commands are display-related but don't actually draw anything on the display.
+
+### backlight()
+
+    backlight(uint8_t percentage)
+
+The backlight function is used to set the intensity of the LED-based backlight built in to the display. `percentage` is the value that you'd like to set, between 0 and 100.
+
+The backlight will be ramped up or down smoothly to the selected intensity. This change will take a few milliseconds so you may want to apply a delay while this happens before you start drawing.
+
+    copro << awc::backlight(100);  
+
+The example sets the backlight to 100%.
+
+### sleep()
+
+    sleep()
+
+This command puts the display into low-power sleep mode. The backlight will be turned off abruptly so you may want to use the `backlight()` function to smoothly switch off the backlight before calling `sleep()`
+
+    copro << awc::sleep();
+
+### wake()
+
+	wake()
+
+This is the inverse of the `sleep()` command. `wake()` will bring the display back to life.
+
+	copro << awc::wake();
+
+### gamma()
+
+    gamma(const Gamma& gamma)
+
+This function applies a set of gamma correction values in the `Gamma` structure to the display. See documentation for `Gamma` structure for details.
+
+Gamma correction allows you to compensate differences in panels from different manufacturers by applying adjustments to the way in which colours are displayed.
+
+    copro << awc::gamma(awc::Gamma::getDefault());
+
+The example applies a default set of gamma values to the panel. The default values were created by me after experimenting with the most popular clone panel that is available on ebay.
+
+### window()
+
+	window(const Rectangle& rc)
+
+This is an advanced function that allows you to manipulate the display _window_ which is the area on the screen where graphics operations will take place. Typically you would do this before issuing `beginWriting()` and `writeData` commands. Using these methods requires knowledge of how the R61523 works and is not generally required.
+
+    copro << awc::window(Rectangle(0,0,Copper::WIDTH,Copper::HEIGHT));
+
+The example sets the display window to the full screen.
+
+### beginWriting()
+
+    beginWriting()
+
+This advanced function is used to tell the display that you are about to send raw data to it. Normally you would have used the `window()`function immediately before this is called.
+
+    copro << awc::beginWriting();
+
+### writeData()
+
+    writeData(const void *data,uint16_t count)
+
+This advanced function is used to write a block of raw data directly to the display. `beginWriting()` must have been called before you start calling `writeData()` and you can call `writeData()` as many times as you like. There is no termination function, you can just call other functions in this API as soon as you've written your last block of raw data. `data` is a pointer to the buffer containing the raw bytes and `count` is the number of bytes in the buffer.
+
+	unsigned int buffer[200];
+	
+    copro << awc::window(Rectangle(0,0,10,10))
+          << awc::beginWriting()
+          << awc::writeData(buffer,200);
+
+The example shows the complete sequence of setting a window, starting a write and then writing the data.
+
+### The T1 and T2 pins

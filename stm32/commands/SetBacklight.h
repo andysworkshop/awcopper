@@ -35,7 +35,6 @@ namespace cmd {
 
     // wait for, and then read the parameter
 
-    while(commandBuffer.availableToRead()<PARAMETER_COUNT);
     percentage=commandBuffer.managedRead();
 
     // set the percentage

@@ -73,6 +73,9 @@ void setup() {
   
   prompt("Erasing entire flash chip... please wait.");
   copro << awc::eraseFlash();
+  prompt("");
+
+  copro << awc::text(Point::Origin,"Waiting    Address    Page    Checksum    Program    Acknowledge");
 }
 
 
@@ -87,6 +90,8 @@ void loop() {
   
   waitPreamble();
   readAddress(address);
+  showAddress(address);
+  drawBlock(address,awc::YELLOW);
   readPage(page,pageChecksum,address);
   
   if(!readChecksum(pageChecksum)) {
@@ -114,7 +119,7 @@ void drawBlock(uint32_t address,uint32_t cr) {
   // 160 blocks per row, 4px per block
   
   rc.X=4*(address % 160);
-  rc.Y=32+(4*(address/160));
+  rc.Y=42+(4*(address/160));
   rc.Width=rc.Height=3;
   
   copro << awc::foreground(cr)
@@ -138,7 +143,8 @@ void waitPreamble() {
 
   // wait for the bytes to arrive
 
-  prompt("Waiting for preamble...");
+  clearIndicator();
+  showIndicator(60);
 
   pos=0;
   while(pos<sizeof(preamble)/sizeof(preamble[0])) {
@@ -168,7 +174,7 @@ void readAddress(uint32_t& address) {
 
   uint8_t i,c;
 
-  prompt("Reading address in flash");
+  showIndicator(160);
 
   address=0;
 
@@ -190,10 +196,8 @@ void readAddress(uint32_t& address) {
 void readPage(uint8_t *flashPage,uint8_t& pageChecksum,uint32_t address) {
 
   uint8_t received,c;
-  char buffer[100];
   
-  sprintf(buffer,"Waiting for 256 bytes at address %lu",address);
-  prompt(buffer);
+  showIndicator(232);
 
   received=0;
   pageChecksum=0;
@@ -220,7 +224,7 @@ bool readChecksum(uint8_t& ourChecksum) {
 
   uint8_t theirChecksum;
 
-  prompt("Reading checksum");
+  showIndicator(340);
 
   while(!Serial.available());
   theirChecksum=Serial.read();
@@ -240,13 +244,13 @@ bool readChecksum(uint8_t& ourChecksum) {
 
 void programPage(uint32_t address,const uint8_t *flashPage) {
 
+  showIndicator(440);
+
   // we can stream in as many of these requests as the coprocessor can buffer
   // it'll block back via the I2C bus if/when we fill the FIFO
 
   copro << awc::program(address) 
         << awc::Bytes(flashPage,256);
-        
-  delay(50);
 }
 
 
@@ -255,7 +259,7 @@ void programPage(uint32_t address,const uint8_t *flashPage) {
  */
 
 void sendNack() {
-  prompt("Sending NACK to peer");
+  showIndicator(574);
   Serial.write(ResponseCodes::NACK);
 }
 
@@ -265,7 +269,7 @@ void sendNack() {
  */
 
 void sendAck() {
-  prompt("Sending ACK to peer");
+  showIndicator(574);
   Serial.write(ResponseCodes::ACK);
 }
 
@@ -287,11 +291,52 @@ void prompt(const char *str,uint32_t cr) {
 
   // clear the background
   
-  copro << awc::clearRectangle(Rectangle(0,0,Copper::WIDTH,16));
+  copro << awc::clearRectangle(Rectangle(0,344,Copper::WIDTH,16));
   
   // set the foreground colour and write out the string
 
   copro << awc::foreground(cr)
-        << awc::text(Point::Origin,str);
+        << awc::text(Point(0,344),str);
+}
+
+
+/*
+ * Remove the indicator line
+ */
+ 
+void clearIndicator() {
+
+  copro << awc::foreground(awc::BLACK)
+        << line(Point(0,18),Point(Copper::WIDTH-1,18));
+}
+
+
+/*
+ * Show the indicator line
+ */
+ 
+void showIndicator(int width) {
+
+  copro << awc::foreground(awc::WHITE)
+        << line(Point(0,18),Point(width,18));
+}
+
+
+/*
+ * Show the address being programmed
+ */
+ 
+void showAddress(uint32_t address) {
+
+  char buffer[50];
+  
+  // convert to ASCII
+  
+  sprintf(buffer,"%lu",address);
+  
+  // clear the space then write out the address
+  
+  copro << awc::clearRectangle(Rectangle(99,20,130,16))
+        << awc::text(Point(99,20),buffer);
 }
 

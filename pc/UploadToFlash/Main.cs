@@ -31,7 +31,7 @@ namespace UploadToFlash {
       _serialPort.Items.AddRange(SerialPort.GetPortNames());
 
       if(_serialPort.Items.Count>0) 
-        _serialPort.SelectedIndex=0;
+        _serialPort.SelectedIndex=_serialPort.Items.Count-1;
       else { 
         MessageBox.Show("No serial ports found, please plug your Arduino in and run the ProgramFlash example sketch","Serial error",MessageBoxButtons.OK,MessageBoxIcon.Error);
 

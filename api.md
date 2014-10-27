@@ -356,7 +356,11 @@ _awcopper_ offers a comprehensive suite of functionality for displaying bitmappe
 
 Uncompressed images are nothing more than a stream of pixel data pre-rendered into a form that can be streamed directly into the display. The _bm2rgbi_ tool supplied with _awcoppper_ will create these uncompressed files for you from a variety of sources such as JPEG, PNG etc.
 
-XXX insert bm2rgi usage here
+    bm2rgbi.exe test.jpg test.bin r61523 64
+
+`bm2rgbi` takes four mandatory parameters, the first two of which are important to you. The first parameter is the filename of the image to convert. All the common web bitmap formats are supported such as JPEG and PNG.
+
+The second parameter is the name of the output file. The fourth and fifth parameters, `r61523 64` are constant. `bm2rgbi` is capable of converting graphics to many types of panel and colour depth. We are only interested in the _awcopper_ panel driver and that is a Renesas R61523 running in 64K colour mode.
 
 The primary advantage of uncompressed images is that they are very fast because there is no decompression required. Pair this with a fast storage medium such as the on-board flash and you'll get the best performance. The downside is that uncompressed images can get very large. You wouldn't want to try storing too many of them in your Arduino Uno program memory for example.
 
@@ -364,7 +368,9 @@ The primary advantage of uncompressed images is that they are very fast because 
 
 LZG is a compact compressor that offers very similar performance to the PNG format with less file format overhead. If your graphics are primarily computer generated, such as icons, then LZG will probably get you the best compression. The _bm2rgbi_ tool supplied with _awcoppper_ will create LZG-compressed files for you from a variety of sources such as JPEG, PNG etc.
 
-XXX insert bm2rgi usage here
+    bm2rgbi.exe test.jpg test.bin r61523 64 -c
+
+The example is very similar to what we used to create an uncompressed bitmap except that we have added the `-c` option that tells `bm2rgbi` to compress the output file using the LZG compressor.
 
 The only downside to LZG compressed images is that there is a processing overhead associated with the decompression. This overhead may, however, be negated by the advantage of having to transfer less data from the storage medium.
 
@@ -428,34 +434,6 @@ The `lzgBitmap()` method is used to tell _awcopper_ that we want to display an L
 
 The way that this streaming works is exactly the same as for the `jpeg()` method, documented above. Please see the above documentation for `jpeg()` for reference and the _LZGBitmap_ example code for an example.
 
-### jpegFlash()
-
-    jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address)
-
-The `jpegFlash` function is used to transfer a JPEG stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the JPEG file. The `address` parameter is the address in the flash device where the image is stored.
-
-The flash IC is much larger than the program memory on your Arduino and can be accessed by the ARM coprocessor, asynchronously to your Arduino, at tens of megabits per second so it makes a lot of sense to store your graphics on the flash chip.
-
-XXX EXAMPLE FLASH JPEG
-
-### bitmapFlash()
-
-    bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address)
-
-The `bitmapFlash` function is used to transfer an uncompressed graphic stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the bitmap file. The `address` parameter is the address in the flash device where the image is stored.
-
-The ARM coprocessor is able to access uncompressed graphics from the flash chip so quickly that this method of storage is generally suitable for a responsive graphical user interface. In fact, that is what I did when developing the user interface to my [reflow oven project](http://andybrown.me.uk/wk/2014/05/11/awreflow/).
-
-XXX EXAMPLE FLASH BITMAP
-
-### lzgBitmapFlash()
-
-    lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
-
-The `lzgBitmapFlash` function is exactly the same as the `bitmapFlash()` function except that it expects the data stored at `address` to be LZG-compressed. Please refer to the documentation for `bitmapFlash()` for further information.
-
-XXX EXAMPLE LZG FLASH BITMAP
-
 ### The onboard flash chip
 
 _awcopper_ comes with an onboard 16 megabit flash IC that allows you to store graphics for fast retrieval while your program is running. The _awcopper_ API offers full access to the program/erase operations and a _ProgramFlash_ example is supplied that allows you to download images from your PC over the USB cable and program them into flash.
@@ -512,6 +490,58 @@ The page must have been erased using one of the erase functions before it can be
           << awc::Bytes(flashPage,256);
 
 The example shows the basic page-program sequence. You don't need to worry about waiting for each page program to complete. Just stream in your page programming commands and data and _awcopper_ will apply its flow control to the stream if you manage to fill the FIFO.
+
+### jpegFlash()
+
+    jpegFlash(const Rectangle& rc,uint32_t count,uint32_t address)
+
+The `jpegFlash` function is used to transfer a JPEG stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the JPEG file. The `address` parameter is the address in the flash device where the image is stored.
+
+The flash IC is much larger than the program memory on your Arduino and can be accessed by the ARM coprocessor, asynchronously to your Arduino, at tens of megabits per second so it makes a lot of sense to store your graphics on the flash chip.
+
+    enum {
+      JPEG_ADDRESS=0,
+      JPEG_SIZE=97548
+    };
+
+    const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
+    copro << awc::jpegFlash(fullScreen,JPEG_SIZE,JPEG_ADDRESS);
+
+The example is taken from the _FlashBitmaps_ example and shows how you ask _awcopper_ to display a full-screen JPEG stored at location 0 with size 97548 bytes.
+
+### bitmapFlash()
+
+    bitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address)
+
+The `bitmapFlash` function is used to transfer an uncompressed graphic stored in the onboard flash chip to the display. The `rc` parameter defines the area on-screen where you want to display the image. The `Width` and `Height` members of the rectangle must exactly match the dimensions of the JPEG. The `count` parameter is the number of bytes in the bitmap file. The `address` parameter is the address in the flash device where the image is stored.
+
+The ARM coprocessor is able to access uncompressed graphics from the flash chip so quickly that this method of storage is generally suitable for a responsive graphical user interface. In fact, that is what I did when developing the user interface to my [reflow oven project](http://andybrown.me.uk/wk/2014/05/11/awreflow/).
+
+    enum {
+      BITMAP_ADDRESS=97792,
+      BITMAP_SIZE=460800
+    };
+
+    const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
+    copro << awc::bitmapFlash(fullScreen,BITMAP_SIZE,BITMAP_ADDRESS);
+
+The example is taken from the _FlashBitmaps_ example and shows how you ask _awcopper_ to display a full-screen bitmap stored at location 97792 with size 460800 (width * height * 2) bytes.
+
+### lzgBitmapFlash()
+
+    lzgBitmapFlash(const Rectangle& rc,uint32_t count,uint32_t address);
+
+The `lzgBitmapFlash` function is exactly the same as the `bitmapFlash()` function except that it expects the data stored at `address` to be LZG-compressed. Please refer to the documentation for `bitmapFlash()` for further information.
+
+    enum {
+      LZG_ADDRESS=558592,
+      LZG_SIZE=255682
+    };
+
+    const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
+    copro << awc::lzgBitmapFlash(fullScreen,LZG_SIZE,LZG_ADDRESS);
+
+The example is taken from the _FlashBitmaps_ example and shows how you ask _awcopper_ to display a full-screen LZG bitmap stored at location 558592 with size 255682 bytes.
 
 ### Non-graphical commands
 
@@ -590,3 +620,58 @@ This advanced function is used to write a block of raw data directly to the disp
 The example shows the complete sequence of setting a window, starting a write and then writing the data.
 
 ### The T1 and T2 pins
+
+_awcopper_ features a pair of general purpose output pins that you can program for your own needs. These pins may be programmed for GPIO or used as outputs from two of the ARM timer peripherals, for example for generating PWM waveforms.
+
+T1 and T2 have an output high level of 2.8V though this can be changed for the GPIO modes by setting the pins to open-drain and adding an external pull-up resistor to your desired level. Let's take a look at the functionality on offer.
+
+In all the following documentation I will use an 'X' where a timer pin number is required. For example, `tXGpio` may refer either to the `t1Gpio` or `t2Gpio` functions.
+
+### tXGpio()
+
+    tXGpio(GpioSlew slew,GpioDrive drive)
+
+This function initialises a pin for GPIO. A pin may be used for GPIO or timer output but not both at the same time. `GpioSlew` is an enumeration in the `awc` namespace containing the following values:
+
+    enum GpioSlew {
+      GPIOSLEW_2 = 0,                 // 2MHz slew rate
+      GPIOSLEW_10 = 1,                // 10MHz slew rate
+      GPIOSLEW_50 = 36                // 50MHz slew rate
+    };
+
+The selected values controls the internal speed with which the pin changes from one level to another. Faster speeds result in a more abrupt change but can cause issues with under and overshoot. Given that you can only control these pins at the rate of the I<sup>2</sup>C bus it makes sense to favour the lower speeds and have a better signal quality.
+
+`GpioDrive` is another enumeration that controls how the ARM device drives the GPIO pin:
+
+    enum GpioDrive {
+      GPIODRIVE_PUSHPULL = 0,         // normal 2.8V/GND driver
+      GPIODRIVE_OPENDRAIN = 1,        // GND driver, open-drain high. must be pulled up externally.
+    };
+
+In push-pull mode the pin is driven both high and low by the ARM MCU. In open-drain mode the MCU drives the pin low but cannot drive it high. You must supply an external pull-up resistor to the level you desire. This mode allows you to drive peripherals whose input-high level does match the 2.8V level of _awcopper_. It also allows you to safely use a shared bus where the possibility of multiple simultaneous drivers could cause actual device damage.
+
+    copro << awc::t1Gpio(awc::GPIOSLEW_2,awc::GPIODRIVE_PUSHPULL);
+
+The example initialises T1 with a 2MHz slew rate in push-pull mode.
+
+### tXGpioSet(), tXGpioReset()
+
+    tXGpioSet()
+    tXGpioReset()
+
+These functions set (high) or reset (low) a T1/2 pin that must have been initialised with `tXGpio`.
+
+    copro << awc::t2GpioSet();
+
+Set's the T2 pin high (2.8V) for push-pull or open for open-drain.
+
+### tXGpioControl()
+
+    tXGpioControl(bool set)
+
+Set's the T1/T2 pin to the value of the `set` parameter. `true` = high, `false` = low.
+
+    copro << awc::t1GpioControl(false);
+
+Sets T1 to the low state.
+

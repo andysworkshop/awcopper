@@ -78,8 +78,7 @@ void loop() {
 
 void jpegDemo() {
   
-//  const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
-  const Rectangle fullScreen(0,0,500,308);
+  const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
   
   prompt("JPEG demo from coprocessor external flash");
   
@@ -115,10 +114,10 @@ void bitmapDemo() {
 
 void lzgDemo() {
 
-  uint32_t start,elapsed;
   const Rectangle fullScreen(0,0,Copper::WIDTH,Copper::HEIGHT);
 
   prompt("LZG Compressed bitmap demo");
+
   copro << awc::lzgBitmapFlash(fullScreen,LZG_SIZE,LZG_ADDRESS);
   
   // enjoy for 8 seconds :)

@@ -53,8 +53,7 @@ inline void TPin<TTimer,TGpio>::setupGpio(GPIOSpeed_TypeDef speed,Gpio::GpioOutp
       Gpio::OUTPUT,
       speed,
       Gpio::PUPD_NONE,
-      outputType,
-      0);
+      outputType);
 }
 
 

@@ -105,12 +105,12 @@ namespace awc {
   enum GpioSlew {
     GPIOSLEW_2 = 0,                 // 2MHz slew rate
     GPIOSLEW_10 = 1,                // 10MHz slew rate
-    GPIOSLEW_50 = 36                // 50MHz slew rate
+    GPIOSLEW_50 = 3                 // 50MHz slew rate
   };
 
   enum GpioDrive {
-    GPIODRIVE_PUSHPULL = 0,         // normal 2.8V/GND driver
-    GPIODRIVE_OPENDRAIN = 1,        // GND driver, open-drain high. must be pulled up externally.
+    GPIODRIVE_OPENDRAIN = 0,        // GND driver, open-drain high. must be pulled up externally.
+    GPIODRIVE_PUSHPULL = 1,         // normal 2.8V/GND driver
   };
 
 

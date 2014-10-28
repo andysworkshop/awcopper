@@ -918,26 +918,26 @@ namespace awc {
    */
 
   inline uint16_t t1GpioSet() {
-    internal::gpioControlOp(1,1);
+    return internal::gpioControlOp(1,1);
   }
 
   inline uint16_t t1GpioReset() {
-    internal::gpioControlOp(1,0);
+    return internal::gpioControlOp(1,0);
   }
 
   inline uint16_t t1GpioControl(bool set) {
-    internal::gpioControlOp(1,set);
+    return internal::gpioControlOp(1,set);
   }
 
   inline uint16_t t2GpioSet() {
-    internal::gpioControlOp(2,1);
+    return internal::gpioControlOp(2,1);
   }
 
   inline uint16_t t2GpioReset() {
-    internal::gpioControlOp(2,0);
+    return internal::gpioControlOp(2,0);
   }
 
   inline uint16_t t2GpioControl(bool set) {
-    internal::gpioControlOp(2,set);
+    return internal::gpioControlOp(2,set);
   }
 }

@@ -39,7 +39,7 @@ void setup() {
         << awc::clear()                           // clear screen
         << awc::t1Frequency(                      // use T1 in timer mode          
                   1999,                           // auto-reload at 2000
-                  1,                              // prescaler of 2 (24/2 = 12MHz)
+                  1,                              // prescaler of 2 12/15MHz (normal/overclocked)
                   awc::CKDIV_1,                   // no clock-division
                   awc::COUNTERMODE_UP)            // timer counts up
         << awc::t1InitCompare(                    // initialise output channel

@@ -2,6 +2,10 @@
  * Andy's Workshop Arduino Graphics Coprocessor.
  * Copyright (c) 2014 Andy Brown. All rights reserved.
  * Please see website (http://www.andybrown.me.uk) for full details.
+ *
+ * This demo will generate 2 PWM waves of continuously varying duty
+ * cycles using the T1 and T2 pins. The frequency of the signals will
+ * be 16KHz on an overclocked MCU running at 64MHz.
  */
  
 #include <Wire.h>
@@ -32,14 +36,21 @@ void setup() {
   
   copro.reset();
 
-  // setup the display and the timer pins to GPIO
+  // setup the display and prompt
   
   copro << awc::gamma(awc::Gamma::getDefault())   // set default gamma
-        << awc::background(awc::WHITE)            // background is white
+        << awc::background(awc::BLACK)            // background is white
+        << awc::foreground(awc::WHITE)            // foreground is black
+        << awc::font(awc::DOS)                    // set a font
         << awc::clear()                           // clear screen
-        << awc::t1Frequency(                      // use T1 in timer mode          
+        << awc::text(Point(10,10),                // show a prompt
+                     "PWM Timer duty cycle demo");
+                     
+  // setup T1
+
+  copro << awc::t1Frequency(                      // use T1 in timer mode          
                   1999,                           // auto-reload at 2000
-                  1,                              // prescaler of 2 12/15MHz (normal/overclocked)
+                  1,                              // prescaler of 2 (24/32MHz (normal/overclocked))
                   awc::CKDIV_1,                   // no clock-division
                   awc::COUNTERMODE_UP)            // timer counts up
         << awc::t1InitCompare(                    // initialise output channel
@@ -47,8 +58,26 @@ void setup() {
                   awc::OCMODE_PWM1,               // PWM mode 1
                   awc::OCPOLARITY_HIGH,           // output compare polarity is high
                   awc::OCPRELOAD_DISABLE)         // preloading is off
-        << awc::t1Enable()                        // switch the timer pin on
-        << awc::backlight(100);                   // bring backlight to 100%
+        << awc::t1Enable();                       // switch the timer pin on
+
+  // setup T2 the same as T1
+
+  copro << awc::t2Frequency(                      // use T1 in timer mode          
+                  1999,                           // auto-reload at 2000
+                  1,                              // prescaler of 2 (24/32MHz (normal/overclocked))
+                  awc::CKDIV_1,                   // no clock-division
+                  awc::COUNTERMODE_UP)            // timer counts up
+        << awc::t2InitCompare(                    // initialise output channel
+                  0,                              // start at 0 duty cycle
+                  awc::OCMODE_PWM1,               // PWM mode 1
+                  awc::OCPOLARITY_HIGH,           // output compare polarity is high
+                  awc::OCPRELOAD_DISABLE)         // preloading is off
+        << awc::t2Enable();                       // switch the timer pin on
+
+
+  // backlight on
+  
+  copro << awc::backlight(100);                   // bring backlight to 100%
 
   // the backlight has a smooth rising curve, wait for it
   
@@ -68,21 +97,22 @@ void loop() {
 
   // remove preview
   
-  drawWave(compare,awc::WHITE);
+  drawWave(compare,awc::BLACK,awc::BLACK);
   
   // check for reversal
 
   if((compare==0 && direction<0) || compare==2000 && direction>0)
     direction=-direction;
   
-  // update duty cycle
+  // update duty cycle. T1 goes one way, T2 goes the other way
   
   compare+=10*direction;
   copro << awc::t1SetCompare(compare);
+  copro << awc::t2SetCompare(2000-compare);
   
   // redraw the wave
   
-  drawWave(compare,awc::BLACK);
+  drawWave(compare,awc::YELLOW,awc::CYAN);
   
   // wait
   
@@ -94,21 +124,31 @@ void loop() {
  * Draw a preview of how the wave will look
  */
  
-void drawWave(uint32_t compare,uint32_t cr) {
+void drawWave(uint32_t compare,uint32_t cr1,uint32_t cr2) {
 
-  Point p[4];
+  Point p1[4],p2[4];
 
-  // set up the points on the line
+  // set up the points on the T1 line
   
-  p[0].X=0;
-  p[0].Y=p[1].Y=(Copper::HEIGHT*3)/4;
-  p[1].X=p[2].X=(Copper::WIDTH*compare)/2000;
-  p[2].Y=p[3].Y=(Copper::HEIGHT/4);
-  p[3].X=Copper::WIDTH-1;
+  p1[0].X=0;
+  p1[0].Y=p1[1].Y=(Copper::HEIGHT*2)/5;
+  p1[1].X=p1[2].X=((Copper::WIDTH-1)*compare)/2000;
+  p1[2].Y=p1[3].Y=(Copper::HEIGHT/5);
+  p1[3].X=Copper::WIDTH-1;
   
-  // draw the line
+  // set up the points on the T2 line
   
-  copro << awc::foreground(cr)
-        << awc::polyline(p,4);
+  p2[0].X=0;
+  p2[0].Y=p2[1].Y=(Copper::HEIGHT*4)/5;
+  p2[1].X=p2[2].X=((Copper::WIDTH-1)*(2000-compare))/2000;
+  p2[2].Y=p2[3].Y=(Copper::HEIGHT*3)/5;
+  p2[3].X=Copper::WIDTH-1;
+
+  // draw the lines
+  
+  copro << awc::foreground(cr1)
+        << awc::polyline(p1,4)
+        << awc::foreground(cr2)
+        << awc::polyline(p2,4);
 }
 

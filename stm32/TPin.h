@@ -80,7 +80,9 @@ inline void TPin<TTimer,TGpio>::setupTimer(uint32_t period,uint16_t prescaler,ui
 
 template<class TTimer,class TGpio>
 inline void TPin<TTimer,TGpio>::initCompare(uint32_t compareValue,uint16_t ocMode,uint16_t polarity,uint16_t preload) const {
-  _ttimer->initCompare(compareValue,ocMode,polarity,preload);
+
+  if(_ttimer!=nullptr)
+    _ttimer->initCompare(compareValue,ocMode,polarity,preload);
 }
 
 
@@ -90,7 +92,9 @@ inline void TPin<TTimer,TGpio>::initCompare(uint32_t compareValue,uint16_t ocMod
 
 template<class TTimer,class TGpio>
 inline void TPin<TTimer,TGpio>::setCompare(uint32_t compareValue) const {
-  _ttimer->setCompare(compareValue);
+
+  if(_ttimer!=nullptr)
+    _ttimer->setCompare(compareValue);
 }
 
 
@@ -101,10 +105,13 @@ inline void TPin<TTimer,TGpio>::setCompare(uint32_t compareValue) const {
 template<class TTimer,class TGpio>
 inline void TPin<TTimer,TGpio>::controlTimer(bool enable) const {
 
-  if(enable)
-    _ttimer->enablePeripheral();
-  else
-    _ttimer->disablePeripheral();
+  if(_ttimer!=nullptr) {
+
+    if(enable)
+      _ttimer->enablePeripheral();
+    else
+      _ttimer->disablePeripheral();
+  }
 }
 
 
@@ -117,8 +124,11 @@ inline void TPin<TTimer,TGpio>::controlGpio(bool set) const {
 
   // go direct to the registers
 
-  if(set)
-    reinterpret_cast<GPIO_TypeDef *>(TGpio::Port)->BSRR=TGpio::Pin;
-  else
-    reinterpret_cast<GPIO_TypeDef *>(TGpio::Port)->BRR=TGpio::Pin;
+  if(_ttimer==nullptr) {
+
+    if(set)
+      reinterpret_cast<GPIO_TypeDef *>(TGpio::Port)->BSRR=TGpio::Pin;
+    else
+      reinterpret_cast<GPIO_TypeDef *>(TGpio::Port)->BRR=TGpio::Pin;
+  }
 }

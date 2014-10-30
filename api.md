@@ -35,28 +35,28 @@ I do this because these base objects are so commonly used that my code reads mor
 
 Every Arduino sketch must have a `setup()` method that you can use to initialise your peripheral hardware, and we need to do the same for our coprocessor. Let's have a look at what needs to be done by reference to the `setup()` method in the graphics library example code:
 
-	void setup() {
-	
-	  // initialise the I2C library for 400kHz
-	  
-	  Wire.begin();
-	  TWBR=12;
-	    
-	  // reset the coprocessor
-	  
-	  copro.reset();
-	
-	  // clear to black and enable the backlight
-	  
-	  copro << awc::gamma(awc::Gamma::getDefault())     // set default gamma
-	        << awc::background(awc::BLACK)              // background is black
-	        << awc::clear()                             // clear screen
-	        << awc::backlight(100);                     // bring backlight to 100%
-	
-	  // the backlight has a smooth rising curve, wait for it
-	  
-	  delay(500);
-	}
+    void setup() {
+    
+      // initialise the I2C library for 400kHz
+      
+      Wire.begin();
+      TWBR=12;
+        
+      // reset the coprocessor
+      
+      copro.reset();
+    
+      // clear to black and enable the backlight
+      
+      copro << awc::gamma(awc::Gamma::getDefault())     // set default gamma
+            << awc::background(awc::BLACK)              // background is black
+            << awc::clear()                             // clear screen
+            << awc::backlight(100);                     // bring backlight to 100%
+    
+      // the backlight has a smooth rising curve, wait for it
+      
+      delay(500);
+    }
 
 The first two code lines initialise the Arduino I<sup>2</sup>C library, more commonly known as _Wire_. We call `Wire.begin()` to initialise _Wire_ and then I force the I<sup>2</sup>C peripheral embedded in the Arduino chip to work at 400kHz using the `TWBR=12` statement, which, under the hood boils down to an on-chip register access.
 
@@ -82,10 +82,10 @@ The API makes use of several support objects that you'll often see being used in
 
 ### Rectangle
 
-	Rectangle()
+    Rectangle()
     Rectangle(x,y,width,height)
     Rectangle(const Point& p,const Size& size)
-	Rectangle(const Rectangle& src)
+    Rectangle(const Rectangle& src)
 
 The `Rectangle` object defines a rectangular area on the display. Various constructors allow you to set up the object from the data that you have available, or you can directly access the `X`, `Y`, `Width` and `Height` members after construction.
 
@@ -98,9 +98,9 @@ The `Rectangle` object defines a rectangular area on the display. Various constr
 
 ### Point
 
-	Point()
-	Point(int16_t x,int16_t y)
-	Point(const Point& p)
+    Point()
+    Point(int16_t x,int16_t y)
+    Point(const Point& p)
 
 Represents a single point on the display. The default constructor initialise the `X` and `Y` members to `(0,0)`.
 
@@ -138,12 +138,12 @@ If you're going to be using the _awcopper_ API to display graphics images then y
 
 ### Colour names
 
-	namespace awc {
-	  enum {
-	    SNOW=0xfffafa,
-	    GHOSTWHITE=0xf8f8ff,
-	    WHITESMOKE=0xf5f5f5,
-	    GAINSBORO=0xdcdcdc,
+    namespace awc {
+      enum {
+        SNOW=0xfffafa,
+        GHOSTWHITE=0xf8f8ff,
+        WHITESMOKE=0xf5f5f5,
+        GAINSBORO=0xdcdcdc,
 
         [ and a whole lot more ...]   
 
@@ -213,7 +213,7 @@ The example will fill a rectangle 100 pixels wide and 200 high located at the or
 
 ### rectangle()
 
-	rectangle(const Rectangle& rc)
+    rectangle(const Rectangle& rc)
 
 A function that allows you to draw a rectangle with a single pixel outline with the current foreground colour.
 
@@ -241,7 +241,7 @@ This function performs a linear gradient fill of a rectangular region. The gradi
 
 The `Direction` type is an enumeration containing the values  `HORIZONTAL` and `VERTICAL`.
 
-	Rectangle rc(0,0,Copper::WIDTH,Copper::HEIGHT);
+    Rectangle rc(0,0,Copper::WIDTH,Copper::HEIGHT);
     copro << awc::gradientFillRectangle(rc,Direction::HORIZONTAL,awc::BLACK,awc::RED);
 
 This example will fill the whole display with a horizontal gradient that starts at black and fades into full intensity red.
@@ -305,7 +305,7 @@ The `polyline` method allows you to draw a sequence of lines that connect the ar
     p[2].X=Copper::WIDTH-1;
     p[2].Y=Copper::HEIGHT-1;
 
-	copro << awc::polyline(p,sizeof(p)/sizeof(p[0]));
+    copro << awc::polyline(p,sizeof(p)/sizeof(p[0]));
 
 This example will draw a line from the origin at the top-left across to the top-right corner and then down to the bottom-right corner. The line will be drawn in the currently selected foreground colour.
 
@@ -456,25 +456,25 @@ Flash devices tend to be arranged into rather large blocks, 64Kb in the case of 
 
 `erase4KSector()` will erase 4096 bytes starting at the `address` that you supply. The address is a byte address within the device that must be aligned to a 4096 byte boundary.
 
-	copro << awc::erase4KSector(8192);
+    copro << awc::erase4KSector(8192);
 
 The example will erase 4096 bytes starting at address 8192 (the third sector).
 
 ### erase8KSector()
 
-	erase8KSector(uint32_t address)
+    erase8KSector(uint32_t address)
 
 Just like `erase4KSector()` except that it deals in 8192 byte sectors.
 
 ### erase64KSector()
 
-	erase64KSector(uint32_t address)
+    erase64KSector(uint32_t address)
 
 Just like `erase4KSector()` except that it deals in 65536 byte sectors, a complete block.
 
 ### program()
 
-	program(uint32_t address)
+    program(uint32_t address)
 
 Use the `program()` function to begin writing a page of data to the flash device at the location given by `address`, which must be on a 256 byte boundary. A page consists of exactly 256 bytes.
 
@@ -569,11 +569,11 @@ This command puts the display into low-power sleep mode. The backlight will be t
 
 ### wake()
 
-	wake()
+    wake()
 
 This is the inverse of the `sleep()` command. `wake()` will bring the display back to life.
 
-	copro << awc::wake();
+    copro << awc::wake();
 
 ### gamma()
 
@@ -589,7 +589,7 @@ The example applies a default set of gamma values to the panel. The default valu
 
 ### window()
 
-	window(const Rectangle& rc)
+    window(const Rectangle& rc)
 
 This is an advanced function that allows you to manipulate the display _window_ which is the area on the screen where graphics operations will take place. Typically you would do this before issuing `beginWriting()` and `writeData` commands. Using these methods requires knowledge of how the R61523 works and is not generally required.
 
@@ -611,8 +611,8 @@ This advanced function is used to tell the display that you are about to send ra
 
 This advanced function is used to write a block of raw data directly to the display. `beginWriting()` must have been called before you start calling `writeData()` and you can call `writeData()` as many times as you like. There is no termination function, you can just call other functions in this API as soon as you've written your last block of raw data. `data` is a pointer to the buffer containing the raw bytes and `count` is the number of bytes in the buffer.
 
-	unsigned int buffer[200];
-	
+    unsigned int buffer[200];
+    
     copro << awc::window(Rectangle(0,0,10,10))
           << awc::beginWriting()
           << awc::writeData(buffer,200);
@@ -675,3 +675,27 @@ Set's the T1/T2 pin to the value of the `set` parameter. `true` = high, `false` 
 
 Sets T1 to the low state.
 
+### txFrequency()
+
+    txFrequency(uint32_t period,
+                uint16_t prescaler,
+                ClockDivision clockDivision,
+                CounterMode counterMode)
+
+This function is used to initialise a pin in timer mode. T1 and T2 run at an internal frequency equal to the MCU core clock which is officially 48MHz but could be 64MHz if you're using _awcopper_ in overclocked mode. 
+
+`period` is the number of clock ticks after which the timer will change direction or auto-reload. If `counterMode` is `awc::COUNTERMODE_UP` then the counter will count up to `period` and then reset to zero and start again. If `counterMode` is `awc::COUNTERMODE_UP` then the counter will start at `period`and count down to zero before auto-reloading with `period`.  There are also three center-aligned modes, with `awc::COUNTERMODE_CENTER3` being the one that counts up then reverses back to zero, then counts up again, and so on.
+
+`prescaler` is the number by which the clock should be divided, minus one. So to divide by 2 `prescaler` should be 1.
+
+`clockDivision` is yet another clock divider that can be set to `awc::CKDIV_1`,  `awc::CKDIV_2` or `awc::CKDIV_4` to further divide down the clock to get lower frequencies.
+
+      copro << awc::t1Frequency(           // use T1 in timer mode          
+                  1999,                    // auto-reload at 2000
+                  1,                       // prescaler of 2 (24/32MHz)
+                  awc::CKDIV_1,            // no clock-division
+                  awc::COUNTERMODE_UP)     // timer counts up
+
+The example sets the timer to count upwards until it hits 2000 when it will reset to zero and start counting up again. Assuming an overclocked 64MHz MCU then the timer clock ticks at 64/2/1 = 32MHz. There are 2000 ticks so it will hit the reload value of 2000 at a frequency of 32MHz/2000 = 16kHz.
+
+What we've done here is to prepare the timer to do _something_ at a frequency of 16kHz. As we'll see next we can toggle our output pins to create fixed frequency pulses or PWM waveforms.

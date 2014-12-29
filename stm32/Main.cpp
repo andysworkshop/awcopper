@@ -42,7 +42,7 @@ int main() {
 
   CommandExecutor executor(reader,panel,indicators);
 
-  // start the reader and run the executor
+  // start the reader and run the executors
 
   reader.start();
   executor.run();

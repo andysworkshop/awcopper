@@ -62,7 +62,7 @@ void setup() {
 
   // setup T2 the same as T1
 
-  copro << awc::t2Frequency(                      // use T1 in timer mode          
+  copro << awc::t2Frequency(                      // use T2 in timer mode          
                   1999,                           // auto-reload at 2000
                   1,                              // prescaler of 2 (24/32MHz (normal/overclocked))
                   awc::CKDIV_1,                   // no clock-division

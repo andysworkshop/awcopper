@@ -2,6 +2,8 @@
 
 This project contains the Arduino library and STM32 firmware for my graphics coprocessor project.
 
+![Graphics Coprocessor](http://i0.wp.com/andybrown.me.uk/wk/wp-content/images/awcopper/test_image_small.jpg)
+
 ### Project documentation
 [Click here](http://andybrown.me.uk/wk/2015/02/02/awcopper) to go to my website to read the full project documentation.
 

@@ -29,4 +29,4 @@ If you're looking for the `bm2rgbi` image converter that was mentioned in the ma
 
 ## API documentation
 
-If you're going to use the Arduino library then you'll need the API documentation. It's right here on github, take a look at the `api.md` markdown file.
+If you're going to use the Arduino library then you'll need the API documentation. It's right here on github, take a look at the [`api.md`](https://github.com/andysworkshop/awcopper/blob/master/api.md) markdown file.

@@ -9,19 +9,19 @@ This project contains the Arduino library and STM32 firmware for my graphics cop
 
 ## Arduino library
 
-It's in the `arduino` folder in the `awcopper.zip` file. [Here's a guide](http://arduino.cc/en/Guide/Libraries) to installing Arduino libraries. Personally I just extract the zip file into the Arduino IDE's `libraries` folder.
+It's in the [`arduino`](https://github.com/andysworkshop/awcopper/tree/master/arduino) folder in the `awcopper.zip` file. [Here's a guide](http://arduino.cc/en/Guide/Libraries) to installing Arduino libraries. Personally I just extract the zip file into the Arduino IDE's `libraries` folder.
 
 If you should make any modifications to the library or the examples then you can run the `build.sh` script to rebuild the `awcopper.zip` archive. `build.sh` is a shell script so you'll need to be running Linux or Cygwin on Windows.
 
 ## STM32 firmware
 
-It's in the `stm32` folder. If you're just looking for something to flash then take a look in the `hex` folder. You'll find both the standard and overclocked versions of the firmware ready and waiting for you to flash to the STM32.
+It's in the [`stm32`](https://github.com/andysworkshop/awcopper/tree/master/stm32) folder. If you're just looking for something to flash then take a look in the [`hex`](https://github.com/andysworkshop/awcopper/tree/master/stm32/hex) folder. You'll find both the standard and overclocked versions of the firmware ready and waiting for you to flash to the STM32.
 
 If you make any changes to the library then you'll need to rebuild it using the `scons` build system. The project documentation over at my website goes into this in a little more detail. Note that there is a dependency on my [stm32plus](https://github.com/andysworkshop/stm32plus) library so make sure you've cloned and installed stm32plus before you attempt to build the awcopper firmware.
 
 ## PC software
 
-It's in the `pc` folder. There's just one utility included with this library, `UploadToFlash` is the C# application that allows you to send graphics files to the SPI flash IC on the board. If you're just looking for the executable program then you'll find it in the `bin\Debug` or `bin\Release` folder.
+It's in the [`pc`](https://github.com/andysworkshop/awcopper/tree/master/pc) folder. There's just one utility included with this library, `UploadToFlash` is the C# application that allows you to send graphics files to the SPI flash IC on the board. If you're just looking for the executable program then you'll find it in the `exe` folder.
 
 ## Other software
 

@@ -156,7 +156,7 @@ Be aware that because the display is operating in 16-bit mode then the actual co
 Way back when we were initialising we used a `typedef` to define the display orientation, like this: `typedef awc::PortraitCoProcessor Copper`. Now that we've got a concise `Copper` type we can use it to refer to some useful constants:
 
 | Constant | Value |
-|-|-|
+|----------|-------|
 | `Copper::WIDTH` | The display width. 640, or 360 for landscape or portrait mode, respectively |
 | `Copper::HEIGHT` | The display height. 360, or 640 for landscape or portrait mode, respectively |
 
@@ -318,7 +318,7 @@ This function sets the font that will be used by the text output methods. _awcop
 The `FontId` type is an enumeration that can take one of the following values:
 
 | FontId | Name | Pixel Height |
-|-|-|-|
+|--------|------|--------------|
 | `awc::APPLE` | [Apple](http://www.dafont.com/apple.font) | 8 |
 | `awc::ATARI` | [Atari ST](http://www.dafont.com/atari-st-8x16-system-font.font) | 16 |
 | `awc::DOS` | [Perfect DOS VGA](http://www.dafont.com/perfect-dos-vga-437.font) | 8 |
